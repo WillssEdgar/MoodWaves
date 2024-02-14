@@ -5,6 +5,7 @@
   2. Carson Godwin - Project Manager
   3. Anna Burgess - Developer
   4. Sam Huff - Developer
+  5. Taylor Morabito - Developer
 
 
 
