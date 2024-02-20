@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
+import 'screens/home.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Welcome to Mood Waves!'),
-        ),
-      ),
+    return MaterialApp(
+      title: 'Mood Waves',
+      home: HomeScreen(), // Set the homescreen to be the default screen
     );
   }
 }
+
