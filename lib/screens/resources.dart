@@ -1,23 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mood_waves/classes/resource_Class.dart';
 
 class ResourcesPage extends StatelessWidget {
-  final List<Map<String, String>> resources = [
-    {
-      "title": "National Mental Health Helpline",
-      "description": "Available 24/7 for mental health support.",
-      "url": "tel:1-800-662-HELP",
-    },
-    {
-      "title": "Crisis Text Line",
-      "description": "Text HOME to 741741 for free, 24/7 crisis support.",
-      "url": "sms:741741",
-    },
-    {
-      "title": "Campus Counseling Center",
-      "description": "Professional counseling services for students.",
-      "url": "https://yourcollege.edu/counseling",
-    },
-  ];
+  final List<Resource> resources = sampleLists;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +15,9 @@ class ResourcesPage extends StatelessWidget {
         itemBuilder: (context, index) {
           final resource = resources[index];
           return ListTile(
-            title: Text(resource['title']!),
-            subtitle: Text(resource['description']!),
+            title: Text(resource.resourceName),
+            subtitle: Text(resource.resourceDesc),
+            // text: Text(resource.resourceURL),
           );
         },
       ),
