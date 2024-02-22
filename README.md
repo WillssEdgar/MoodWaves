@@ -31,7 +31,8 @@ flutter pub get
 ```
 
 **Step 3:**
-Execute the following command to run the project
+
+Execute the following command to run the project:
 
 ```
 flutter run
