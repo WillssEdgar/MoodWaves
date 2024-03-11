@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mood_waves/classes/PieChart.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MoodLog extends StatefulWidget {
@@ -23,24 +24,34 @@ class _MoodLogState extends State<MoodLog> {
       appBar: AppBar(
         title: const Text("Mood Log"),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text("Selected Day: $today"),
-          Wrap(
-            children: [
-              SizedBox(
-                height: 500,
-                width: 400,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text("Selected Day: $today"),
+            Center(
+              child: SizedBox(
+                height: 400,
+                width: 600,
                 child: MyCalendar(
                   selectedDay: today,
                   onDaySelected: _onDaySelected,
                   key: null,
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+            const Wrap(
+              crossAxisAlignment: WrapCrossAlignment.start,
+              children: [
+                SizedBox(
+                  height: 200,
+                  width: 300,
+                  child: MyPieChart(),
+                ),
+                Text("Pie Graph"),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -57,6 +68,7 @@ class MyCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
+      rowHeight: 45,
       locale: "en_US",
       headerStyle: const HeaderStyle(
         formatButtonVisible: false,

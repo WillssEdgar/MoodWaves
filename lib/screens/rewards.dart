@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RewardsPage extends StatelessWidget {
-  
-  final double progress = 0.6; 
+  final double progress = 0.6;
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +13,13 @@ class RewardsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('Your Progress', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text('Your Progress',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             _buildVerticalProgressBar(progress),
             const SizedBox(height: 20),
-            const Text('Rewards at various levels will be listed here.', style: TextStyle(fontSize: 16)),
+            const Text('Rewards at various levels will be listed here.',
+                style: TextStyle(fontSize: 16)),
           ],
         ),
       ),
@@ -27,7 +28,7 @@ class RewardsPage extends StatelessWidget {
 
   Widget _buildVerticalProgressBar(double progress) {
     return SizedBox(
-      height: 200, 
+      height: 200,
       width: 20,
       child: Stack(
         children: <Widget>[
