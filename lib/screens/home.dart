@@ -14,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 1;
 
   final List<Widget> _screens = [
-    ResourcesPage(),
+    // ResourcesPage(),
     EventsPage(),
     DashboardPage(),
     JournalPage(),
