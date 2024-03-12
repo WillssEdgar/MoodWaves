@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  bubble_tab_indicator:
+    dependency: "direct main"
+    description:
+      name: bubble_tab_indicator
+      sha256: "0aa37980a00e3374d917f9da8e83acd7f59ba872a3d05c306220063f28f945aa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.6"
   characters:
     dependency: transitive
     description:
@@ -69,10 +77,10 @@ packages:
     dependency: "direct main"
     description:
       name: fl_chart
-      sha256: "00b74ae680df6b1135bdbea00a7d1fc072a9180b7c3f3702e4b19a9943f5ed7d"
+      sha256: "48a1b69be9544e2b03d9a8e843affd89e43f3194c9248776222efcb4206bb1ec"
       url: "https://pub.dev"
     source: hosted
-    version: "0.66.2"
+    version: "0.62.0"
   flutter:
     dependency: "direct main"
     description: flutter
