@@ -1,19 +1,21 @@
+// ignore_for_file: camel_case_types
+
 import 'package:flutter/material.dart';
 import 'package:mood_waves/classes/mood.dart';
 
-class MoodLog {
+class MoodInfo {
   int date;
-  List<Mood> moods;
+  List<Mood> moodlist;
 
-  MoodLog(this.date, this.moods);
+  MoodInfo(this.date, this.moodlist);
 }
 
 Mood mood1 = Mood("Happy", Colors.green);
-Mood mood2 = Mood("Sad", Colors.blue);
 Mood mood3 = Mood("Peaceful", Colors.yellow);
+Mood mood2 = Mood("Sad", Colors.blue);
 Mood mood4 = Mood("Happy", Colors.green);
 Mood mood5 = Mood("Happy", Colors.green);
 Mood mood6 = Mood("Happy", Colors.green);
 var sampleMoodLog = [
-  MoodLog(02202024, [mood1, mood2, mood3, mood4, mood5, mood6]),
+  MoodInfo(02202024, [mood1, mood2, mood3, mood4, mood5, mood6]),
 ];

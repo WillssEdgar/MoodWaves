@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mood_waves/classes/PieChart.dart';
+import 'package:mood_waves/classes/moodLog.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MoodLog extends StatefulWidget {
@@ -10,6 +11,8 @@ class MoodLog extends StatefulWidget {
 }
 
 class _MoodLogState extends State<MoodLog> {
+  late List<MoodInfo> ML = sampleMoodLog;
+
   DateTime today = DateTime.now();
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
@@ -39,15 +42,15 @@ class _MoodLogState extends State<MoodLog> {
                 ),
               ),
             ),
-            const Wrap(
+            Wrap(
               crossAxisAlignment: WrapCrossAlignment.start,
               children: [
                 SizedBox(
                   height: 200,
                   width: 300,
-                  child: MyPieChart(),
+                  child: MyPieChart(moodLog: ML),
                 ),
-                Text("Pie Graph"),
+                const Text("Pie Graph"),
               ],
             ),
           ],

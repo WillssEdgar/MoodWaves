@@ -4,7 +4,8 @@ import 'package:mood_waves/classes/mood.dart';
 import 'package:mood_waves/classes/moodLog.dart';
 
 class MyPieChart extends StatelessWidget {
-  const MyPieChart({super.key});
+  final List<MoodInfo> moodLog;
+  const MyPieChart({required this.moodLog, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,13 @@ class MyPieChart extends StatelessWidget {
 
   List<PieChartSectionData> _generateSections() {
     List<Color> colors = [];
-    List<Mood> moods = sampleMoodLog[0].moods;
+    List<Mood> moods = [];
+
+    for (int i = 0; i < moodLog.length; i++) {
+      for (int j = 0; j < moodLog[i].moodlist.length; j++) {
+        moods.add(moodLog[i].moodlist[i]);
+      }
+    }
 
     Map<String?, double> moodCount = {};
 
