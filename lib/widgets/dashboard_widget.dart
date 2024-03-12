@@ -6,16 +6,10 @@ class DashboardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-        child: SizedBox(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: DetailsCard(),
-          ),
-        ],
-      ),
-    ));
+    return const Column(
+      children: [
+        DetailsCard(),
+      ],
+    );
   }
 }
