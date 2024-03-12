@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mood_waves/classes/resource_Class.dart';
-
+// import linkify library - web and email
 
 class SearchBarApp extends StatefulWidget{
   const SearchBarApp({super.key});
@@ -61,12 +61,32 @@ class _SearchBarAppState extends State<SearchBarApp> {
 
 class ResourcesPage extends StatelessWidget {
   final List<Resource> resources = sampleLists;
-
+// Most of searchbar design from ChatGPT
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mental Health Resources'),
+        actions: [
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                // Implement search functionality
+              },
+            ),
+          ],
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(48.0),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ),
       ),
       body: 
       //SearchBarApp;
@@ -80,9 +100,9 @@ class ResourcesPage extends StatelessWidget {
              children: [
           Text(resource.resourceDesc),
           Text(resource.resourceURL,
-            style: TextStyle(
+            style: const TextStyle(
               fontStyle: FontStyle.italic,
-              color: const Color.fromARGB(255, 32, 104, 163),
+              color: Color.fromARGB(255, 32, 104, 163),
             ),
           ),
         ],
