@@ -13,5 +13,7 @@ class CardDetails {
         icon: Icons.emoji_events,
         value: "Gold Level",
         title: "Your Reward Level"),
+    CardModel(icon: Icons.calendar_month, value: "4", title: "Log Streak"),
+    CardModel(icon: Icons.face_2, value: "12", title: "Mood"),
   ];
 }
