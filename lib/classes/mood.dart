@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Class representing a mood
 class Mood {
   String? moodName;
   Color moodColor;

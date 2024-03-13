@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mood_waves/screens/moodLog.dart';
+import 'package:mood_waves/screens/mood_log.dart';
 import 'resources.dart';
 import 'dashboard.dart';
 import 'events.dart';
