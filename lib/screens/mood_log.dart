@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mood_waves/classes/pie_chart.dart';
 import 'package:mood_waves/classes/mood.dart';
 import 'package:mood_waves/classes/mood_info.dart';
@@ -33,7 +34,7 @@ class _MoodLogState extends State<MoodLog> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text("Selected Day: $today"),
+            Text("Selected Day: ${DateFormat('yyyy-MM-dd').format(today)}"),
             Center(
               child: SizedBox(
                 height: 360,
