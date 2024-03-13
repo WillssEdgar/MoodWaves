@@ -166,7 +166,10 @@ floatingActionButton: FloatingActionButton(
     );
   },
   tooltip: 'Add Entry',
-  child: const Icon(Icons.add),
+child: const Icon(
+  Icons.add,
+  color: Colors.teal, // Add this line
+),
 ),
     );
   }
