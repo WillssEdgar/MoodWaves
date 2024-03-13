@@ -6,7 +6,8 @@ class RewardsPage extends StatefulWidget {
 }
 
 class _RewardsPageState extends State<RewardsPage> {
-  final double progress = 100; // Change this value to test the button's behavior
+  final double progress =
+      100; // Change this value to test the button's behavior
   final double threshold = 100; // Threshold for the reward to be ready
 
   @override
@@ -22,18 +23,22 @@ class _RewardsPageState extends State<RewardsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('Your Progress', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text('Your Progress',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             _buildVerticalProgressBar(progress, threshold),
             const SizedBox(height: 20),
-            const Text('Rewards at various levels will be listed here.', style: TextStyle(fontSize: 16)),
+            const Text('Rewards at various levels will be listed here.',
+                style: TextStyle(fontSize: 16)),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: isButtonReady ? () {
-                // Add your reward collection logic here
-                // For testing, you can simply print a message to the console
-                print('Reward collected!');
-              } : null, // Disable the button if the reward is not ready
+              onPressed: isButtonReady
+                  ? () {
+                      // Add your reward collection logic here
+                      // For testing, you can simply print a message to the console
+                      print('Reward collected!');
+                    }
+                  : null, // Disable the button if the reward is not ready
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith<Color>(
                   (Set<MaterialState> states) {
