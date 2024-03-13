@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
+
+/// Class representing a mood
 class Mood {
   String? moodName;
-  String? moodColor;
+  Color moodColor;
 
   Mood(this.moodName, this.moodColor);
 
@@ -11,7 +14,7 @@ class Mood {
 }
 
 var sampleMood = [
-  Mood("Peaceful", "Yellow"),
-  Mood("Happy", "Green"),
-  Mood("Angry", "Red"),
+  Mood("Peaceful", Colors.yellow),
+  Mood("Happy", Colors.green),
+  Mood("Angry", Colors.red),
 ];
