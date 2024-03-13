@@ -79,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         backgroundColor: Colors.black, // BottomNavigationBar background color
         unselectedItemColor: Colors.grey, // Unselected item color
+        selectedItemColor: Colors.teal,
         type: BottomNavigationBarType.fixed,
       ),
     );
