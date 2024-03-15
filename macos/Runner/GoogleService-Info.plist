@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyAKEJ_XrgLUvnlR_XFxQ_gtlf1DUIU40HU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>448797205170</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.moodWaves.RunnerTests</string>
+	<key>PROJECT_ID</key>
+	<string>mood-waves</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mood-waves.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:448797205170:ios:1a32dcd16574ab6a3c5fab</string>
+</dict>
+</plist>
