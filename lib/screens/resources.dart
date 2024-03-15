@@ -69,7 +69,7 @@ class ResourcesPage extends StatelessWidget {
         title: const Text('Mental Health Resources'),
         actions: [
             IconButton(
-              icon: Icon(Icons.search),
+              icon: const Icon(Icons.search),
               onPressed: () {
                 // Implement search functionality
               },
