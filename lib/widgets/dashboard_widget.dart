@@ -6,9 +6,18 @@ class DashboardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    // Obtain screen size
+    final Size screenSize = MediaQuery.of(context).size;
+
+    return Column(
       children: [
-        DetailsCard(),
+        SizedBox(
+          // Assign a portion of the screen height to the DetailsCard
+          height:
+              screenSize.height * 0.8, // For example, 80% of the screen height
+          child: const DetailsCard(),
+        ),
+        // You can add more widgets here if needed
       ],
     );
   }

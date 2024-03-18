@@ -8,14 +8,43 @@ class DetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final studentDetails = CardDetails();
+    double cardHeight = 150.0; // Adjust based on your design
+    double verticalSpacing = 12.0; // Adjust based on your design
+    double headerPadding = 20.0; // Additional padding if needed
+    int rowCount = (studentDetails.cardData.length / 2).ceil();
+    double gridHeight =
+        rowCount * (cardHeight + verticalSpacing) + headerPadding;
 
-    return GridView.builder(
-      itemCount: studentDetails.cardData.length,
-      shrinkWrap: true,
-      physics: const ScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4, crossAxisSpacing: 15, mainAxisSpacing: 12.0),
-      itemBuilder: (context, index) => CustomCard(child: Container()),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Wellness Dashboard'),
+      ),
+      body: SizedBox(
+        height: gridHeight,
+        child: GridView.builder(
+          itemCount: studentDetails.cardData.length,
+          physics:
+              const NeverScrollableScrollPhysics(), // Disables scrolling within the GridView
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: verticalSpacing,
+            childAspectRatio:
+                (MediaQuery.of(context).size.width / 2) / cardHeight,
+          ),
+          itemBuilder: (context, index) => CustomCard(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(studentDetails.cardData[index].icon),
+                Text(studentDetails.cardData[index].title),
+                Text(studentDetails.cardData[index].value),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
