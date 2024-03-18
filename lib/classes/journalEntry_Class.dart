@@ -5,14 +5,12 @@ class JournalEntry {
   final String title;
   final String body;
   final DateTime date;
-  final String? mood; // Optional: to capture the user's mood
 
   JournalEntry({
     required this.id,
     required this.title,
     required this.body,
     required this.date,
-    this.mood,
   });
 
   // Convert a JournalEntry instance into a Map
@@ -22,7 +20,6 @@ class JournalEntry {
       'title': title,
       'body': body,
       'date': date.toIso8601String(), // Convert DateTime to a String
-      'mood': mood,
     };
   }
 
@@ -33,7 +30,6 @@ class JournalEntry {
       title: json['title'],
       body: json['body'],
       date: DateTime.parse(json['date']), // Convert String to DateTime
-      mood: json['mood'],
     );
   }
 }
