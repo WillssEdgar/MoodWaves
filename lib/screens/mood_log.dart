@@ -1,13 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mood_waves/classes/journalEntry_Class.dart';
 import 'package:mood_waves/classes/pie_chart.dart';
 import 'package:mood_waves/classes/mood.dart';
 import 'package:mood_waves/classes/mood_info.dart';
+import 'package:mood_waves/widgets/mood_slider.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Mood log screen
 class MoodLog extends StatefulWidget {
-  const MoodLog({super.key});
+  const MoodLog({Key? key}) : super(key: key);
 
   @override
   State<MoodLog> createState() => _MoodLogState();
@@ -16,13 +19,53 @@ class MoodLog extends StatefulWidget {
 class _MoodLogState extends State<MoodLog> {
   late List<MoodInfo> moodInfoList = sampleMoodLog;
 
+  // late JournalEntry sampleEntries = JournalEntry(
+  //   id: "1",
+  //   title: "Sunny Day Reflections",
+  //   body:
+  //       "Today was exceptionally sunny and bright. I spent some time walking in the park, enjoying the warmth and the vibrant colors around me. It's moments like these that make me feel truly grateful for the simple joys in life.",
+  //   date: DateTime(2024, 3, 10),
+  //   mood: "Happy",
+  // );
+
+  late List<JournalEntry> entries = [];
+  // late List<MoodInfo> moodInfoList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchJournalEntries(DateTime.now());
+    // fetchMoodInfoList();
+  }
+
+  void fetchJournalEntries(DateTime selectedDay) async {
+    final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    if (userId.isNotEmpty) {
+      //String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('journalEntries')
+          //.where('id', isEqualTo: formattedDate)
+          .get();
+
+      final entriesList = querySnapshot.docs
+          .map((doc) =>
+              JournalEntry.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      setState(() {
+        entries = entriesList;
+      });
+    }
+  }
+
   DateTime today = DateTime.now();
 
-  // function to handle day selection
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       today = day;
     });
+    fetchJournalEntries(day);
   }
 
   @override
@@ -30,11 +73,22 @@ class _MoodLogState extends State<MoodLog> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Mood Log"),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Selected Day: ${DateFormat('yyyy-MM-dd').format(today)}"),
+            Text(
+              "Selected Day: ${DateFormat('yyyy-MM-dd').format(today)}",
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              "Selected Day: $today",
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
             Center(
               child: SizedBox(
                 height: 360,
@@ -42,37 +96,56 @@ class _MoodLogState extends State<MoodLog> {
                 child: MyCalendar(
                   selectedDay: today,
                   onDaySelected: _onDaySelected,
-                  key: null,
                 ),
               ),
             ),
+            const SizedBox(height: 30),
+            const Text(
+              "Mood Graph",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
-                  child: Column(
-                    children: [
-                      const Text(
-                        "Mood Graph",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
-                      ),
-                      SizedBox(
-                        height: 200,
-                        width: 300,
-                        child: MyPieChart(moodLog: moodInfoList),
-                      ),
-                    ],
+                  child: SizedBox(
+                    height: 200,
+                    width: 300,
+                    child: MyPieChart(moodLog: moodInfoList),
                   ),
                 ),
-                const SizedBox(
-                  width: 20,
-                ),
+                const SizedBox(width: 20),
                 _buildLegend(moodInfoList),
               ],
             ),
+            const Row(
+              children: [
+                Expanded(
+                  child: MoodSlider(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              "Journal Entry",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Column(
+              children: entries
+                  .map((entry) => DisplayJournal(journalEntry: entry))
+                  .toList(),
+            ),
+            // DisplayJournal(journalEntry: sampleEntries),
           ],
         ),
       ),
@@ -80,14 +153,15 @@ class _MoodLogState extends State<MoodLog> {
   }
 }
 
-// Widget for displaying a calendar
 class MyCalendar extends StatelessWidget {
   final DateTime selectedDay;
   final Function(DateTime, DateTime) onDaySelected;
 
-  const MyCalendar(
-      {Key? key, required this.selectedDay, required this.onDaySelected})
-      : super(key: key);
+  const MyCalendar({
+    Key? key,
+    required this.selectedDay,
+    required this.onDaySelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +189,6 @@ class MyCalendar extends StatelessWidget {
   }
 }
 
-// Widget for building a legend displaying mood color names
 Widget _buildLegend(List<MoodInfo> moodLog) {
   List<Mood> moods = moodLog.expand((info) => info.moodlist).toList();
   List<Color> colors = [];
@@ -131,7 +204,6 @@ Widget _buildLegend(List<MoodInfo> moodLog) {
   return SizedBox(
     width: 150,
     child: SingleChildScrollView(
-      // Wrap with SingleChildScrollView
       child: Column(
         children: List.generate(
           colors.length,
@@ -155,4 +227,46 @@ Widget _buildLegend(List<MoodInfo> moodLog) {
       ),
     ),
   );
+}
+
+class DisplayJournal extends StatelessWidget {
+  final JournalEntry journalEntry;
+
+  const DisplayJournal({Key? key, required this.journalEntry})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            journalEntry.title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            DateFormat('yyyy-MM-dd').format(journalEntry.date),
+            style: const TextStyle(
+              fontStyle: FontStyle.italic,
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            journalEntry.body,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
