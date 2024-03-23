@@ -4,19 +4,17 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 
 // import linkify library - web and email
 
-class SearchBarApp extends StatefulWidget{
-  const SearchBarApp({super.key});
+class ResourcePage extends StatefulWidget{
+  const ResourcePage({super.key});
 
   @override
-  State<SearchBarApp> createState() => _SearchBarAppState();
+  State<ResourcePage> createState() => _ResourcePageState();
 }
 
 
-class _SearchBarAppState extends State<SearchBarApp> {
+class _ResourcePageState extends State<ResourcePage> {
   // Add search functionality here
-  bool loading = true;
-
-  _SearchBarAppState();
+  _ResourcePageState();
 
 
   @override
@@ -27,7 +25,7 @@ class _SearchBarAppState extends State<SearchBarApp> {
     return MaterialApp(
       theme: themeData,
       home: Scaffold(
-        appBar: AppBar(title: const Text('Search Bar Sample')), // does not display yet on screen
+        appBar: AppBar(title: const Text('Resources Page')), // does not display yet on screen
         body: const Padding( padding: EdgeInsets.all(8.0)),
       ),
     );
@@ -38,8 +36,8 @@ class _SearchBarAppState extends State<SearchBarApp> {
 
 
 
-class ResourcesPage extends StatelessWidget {
-  final List<Resource> resources = sampleLists;
+class ResourcesPage extends StatelessWidget { // Stateless scaffolding
+  
 // Most of searchbar design from ChatGPT
   @override
   Widget build(BuildContext context) {
@@ -51,19 +49,53 @@ class ResourcesPage extends StatelessWidget {
             preferredSize: Size.fromHeight(48.0),
             child: Padding(
               padding: EdgeInsets.all(8.0),
-              child: TextField(
-                // onChanged: might go here, can shift order of list 
+              child: RescSearchBar()
+            ),
+          ),
+      ),
+      body: DynamicLister() // Calls the stateful list widget
+    
+      
+    );
+  }
+}
+
+class RescSearchBar extends StatefulWidget { // Allows search bar to manipulate the list.
+  const RescSearchBar({super.key});
+
+  @override
+  State<RescSearchBar> createState() => _RescSearchBarState();
+}
+
+class _RescSearchBarState extends State<RescSearchBar> {
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+                //onChanged: (String newString){},
                 decoration: InputDecoration(
                   hintText: 'Search...', // empty text in search bar
                   border: OutlineInputBorder(),
                 ),
-              ),
-            ),
-          ),
-      ),
-      body: 
-      //SearchBarApp; create a dynamic list
-      ListView.builder(
+              );
+  }
+}
+
+
+
+
+class DynamicLister extends StatefulWidget {
+  const DynamicLister({super.key});
+  
+
+  @override
+  State<DynamicLister> createState() => _DynamicListerState();
+}
+
+class _DynamicListerState extends State<DynamicLister> {
+  List<Resource> resources = sampleLists;
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
         itemCount: resources.length,
         itemBuilder: (context, index) {
           final resource = resources[index];
@@ -84,7 +116,6 @@ class ResourcesPage extends StatelessWidget {
           );
         
         },
-      ),
     );
   }
 }
