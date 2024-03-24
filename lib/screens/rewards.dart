@@ -5,12 +5,6 @@ class RewardsPage extends StatefulWidget {
   _RewardsPageState createState() => _RewardsPageState();
 }
 
-class TestClass {
-  int rank;
-  double progress;
-
-  TestClass(this.rank, this.progress);
-}
 
 class _RewardsPageState extends State<RewardsPage> {
   final double progress = 100; // Change this value to test the button's behavior
