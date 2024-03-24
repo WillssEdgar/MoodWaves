@@ -11,9 +11,6 @@ class _RewardsPageState extends State<RewardsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if the button should be ready based on the progress
-    bool isButtonReady = progress >= threshold;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rewards'),
@@ -24,16 +21,76 @@ class _RewardsPageState extends State<RewardsPage> {
           children: <Widget>[
             const Text('Your Progress', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
-            _buildVerticalProgressBar(progress, threshold),
-            const SizedBox(height: 20),
-            const Text('Rewards at various levels will be listed here.', style: TextStyle(fontSize: 16)),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: isButtonReady ? () {
-                // Add your reward collection logic here
-                // For testing, you can simply print a message to the console
-                print('Reward collected!');
-              } : null, // Disable the button if the reward is not ready
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 10,
+                childAspectRatio: 6, // Adjusted for smaller progress bars
+                children: List.generate(ranks.length, (index) {
+                  double progress = ranks[index] * threshold;
+                  bool isButtonReady = progress >= threshold;
+                  return _buildHorizontalProgressBarWithButton(
+                      index, progress, threshold, isButtonReady);
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHorizontalProgressBarWithButton(
+      int index, double progress, double maxProgress, bool isButtonReady) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Rank: ${ranks[index]}',
+                style: const TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(width: 10),
+            SizedBox(
+              height: 20,
+              width: 150, // Reduced width for shorter progress bars
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: progress / maxProgress,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.teal,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Text('${ranks[index]} / ${threshold * (ranks[index] + 1)}',
+            style: const TextStyle(fontSize: 18)),
+        Center(
+          child: SizedBox(
+            width: 150, // Reduced width for a shorter button
+            child: ElevatedButton(
+              onPressed: isButtonReady
+                  ? () {
+                        setState(() {
+                          ranks[index] += 1; // Increase the rank for this progress bar
+                        });
+                        print('Reward collected for Rank ${ranks[index]}!');
+                      }
+                    : null,
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith<Color>(
                   (Set<MaterialState> states) {
@@ -43,37 +100,9 @@ class _RewardsPageState extends State<RewardsPage> {
               ),
               child: const Text('Collect Reward'),
             ),
-          ],
+          ),
         ),
-      ),
-    );
-  }
-
-  // Builds a vertical progress bar to visually represent the progress
-  Widget _buildVerticalProgressBar(double progress, double maxProgress) {
-    double progressRatio = progress / maxProgress;
-    return SizedBox(
-      height: 200,
-      width: 20,
-      child: Stack(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          FractionallySizedBox(
-            heightFactor: progressRatio,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.teal,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }
