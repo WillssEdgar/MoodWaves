@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MoodSlider extends StatefulWidget {
-  const MoodSlider({super.key});
+  final Function(double) onColorSelected;
+
+  const MoodSlider({Key? key, required this.onColorSelected}) : super(key: key);
 
   @override
   State<MoodSlider> createState() => _MoodSliderState();
@@ -9,14 +11,12 @@ class MoodSlider extends StatefulWidget {
 
 class _MoodSliderState extends State<MoodSlider> {
   double _sliderValue = 0.0;
-  Color _selectedColor = Colors.red;
 
   void _updateColor(double value) {
-    int index = (value * (timelineColors.length - 1)).round();
     setState(() {
       _sliderValue = value;
-      _selectedColor = timelineColors[index];
     });
+    widget.onColorSelected(value);
   }
 
   @override
@@ -46,11 +46,11 @@ class _MoodSliderState extends State<MoodSlider> {
 }
 
 List<Color> timelineColors = [
-  Colors.red,
-  Colors.blue,
-  Colors.green,
-  Colors.yellow,
-  Colors.purple,
+  Colors.yellow.shade400,
+  Colors.greenAccent.shade400,
+  Colors.blue.shade400,
+  Colors.deepPurple.shade300,
+  Colors.red.shade400,
 ];
 
 List<double> timelineStops = [
