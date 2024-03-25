@@ -32,7 +32,7 @@ Future<void> _loadEntries() async {
         .orderBy('date', descending: true) // Assuming you want to order by date
         .get();
 
-    final entriesList = querySnapshot.docs.map((doc) => JournalEntry.fromJson(doc.data() as Map<String, dynamic>)).toList();
+    final entriesList = querySnapshot.docs.map((doc) => JournalEntry.fromJson(doc.data())).toList();
     setState(() {
       entries = entriesList;
     });

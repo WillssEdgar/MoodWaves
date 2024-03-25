@@ -79,6 +79,8 @@ class _JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
             .set(updatedEntry.toJson(), SetOptions(merge: true))
             .then((_) {
           print("Journal entry updated successfully.");
+          print(updatedEntry.toJson()); // Check the format of 'date' before saving
+
           // Show a success message using a SnackBar
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -106,50 +108,96 @@ class _JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
     }
   }
 
-  Future<bool> _onWillPop() async {
-    _saveChangesAndExit(); // Save changes when the user attempts to leave the screen
-    return false; // Prevent the default behavior since we're handling navigation manually
-  }
+Future<bool> _onWillPop() async {
+  // Check if there are unsaved changes
+  if (_titleController.text != widget.entry.title || _bodyController.text != widget.entry.body) {
+    // Show a confirmation dialog
+    final shouldLeave = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Discard changes?'),
+        content: const Text('You have unsaved changes. Are you sure you want to leave?'),
+        actions: [
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(false), // User decides not to leave
+          ),
+          TextButton(
+            child: const Text('Discard'),
+            onPressed: () => Navigator.of(context).pop(true), // User decides to leave, discard changes
+          ),
+        ],
+      ),
+    );
 
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Edit Entry'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.save),
-              onPressed:
-                  _saveChangesAndExit, // Save changes and exit when the save icon is tapped
+    return shouldLeave ?? false; // If dialog is dismissed, prevent pop (by returning false)
+  }
+  // If there are no changes, allow the pop action
+  return true;
+}
+
+
+@override
+Widget build(BuildContext context) {
+  // Use theme data for consistent styling
+  final theme = Theme.of(context);
+
+  return WillPopScope(
+    onWillPop: _onWillPop,
+    child: Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Entry', style: theme.textTheme.titleLarge),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: _saveChangesAndExit, // Save changes and exit when the save icon is tapped
+            tooltip: 'Save Changes',
+          ),
+        ],
+        backgroundColor: theme.appBarTheme.backgroundColor,
+      ),
+      body: SingleChildScrollView( // Make the body scrollable
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Title', style: theme.textTheme.titleMedium?.copyWith(color: theme.primaryColor)),
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(
+                hintText: "Enter title here",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+              style: theme.textTheme.titleLarge,
+            ),
+            const SizedBox(height: 20),
+            Text('Body', style: theme.textTheme.titleMedium?.copyWith(color: theme.primaryColor)),
+            const SizedBox(
+              height: 8,
+            ),
+            TextField(
+              controller: _bodyController,
+              decoration: InputDecoration(
+                hintText: "Enter your journal entry here",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+              expands: false, // Change to false to make TextField expandable
+              maxLines: null, // Allows for any number of lines
+              minLines: 5, // Set minLines to null and maxLines to null for expanding
+              keyboardType: TextInputType.multiline,
+              style: theme.textTheme.bodyLarge,
             ),
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(hintText: "Title"),
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: _bodyController,
-                  decoration: const InputDecoration(hintText: "Body"),
-                  expands: true,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

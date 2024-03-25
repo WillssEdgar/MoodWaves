@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 class JournalEntry {
   final String id;
   final String title;
@@ -19,7 +21,7 @@ class JournalEntry {
       'id': id,
       'title': title,
       'body': body,
-      'date': date.toIso8601String(), // Convert DateTime to a String
+      'date': DateFormat('yyyy-MM-dd').format(date),
     };
   }
 
@@ -29,7 +31,8 @@ class JournalEntry {
       id: json['id'],
       title: json['title'],
       body: json['body'],
-      date: DateTime.parse(json['date']), // Convert String to DateTime
+      date: DateTime.parse(
+          json['date'] as String), // Correctly parses 'yyyy-MM-dd' format
     );
   }
 }
