@@ -21,6 +21,9 @@ class _JournalPageState extends State<JournalPage> {
     _loadEntries();
   }
 
+  // Future<void> _signOut() async {
+  //   await FirebaseAuth.instance.signOut();
+  // }
 
 Future<void> _loadEntries() async {
   final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
