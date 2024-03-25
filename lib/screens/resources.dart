@@ -1,21 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:mood_waves/classes/resource_Class.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-// import linkify library - web and email
 
-class ResourcePage extends StatefulWidget{
-  const ResourcePage({super.key});
+
+class ResourcesPage extends StatefulWidget {
+   const ResourcesPage({super.key});
+   
 
   @override
-  State<ResourcePage> createState() => _ResourcePageState();
+  State<ResourcesPage> createState() => _ResourcePageState();
+  
+  
 }
 
 
-class _ResourcePageState extends State<ResourcePage> {
-  // Add search functionality here
+class _ResourcePageState extends State<ResourcesPage> implements SearchBarChangeListener {
   _ResourcePageState();
+  List<Resource> resources = sampleLists;
 
+  @override
+  void onSearchbarChanged(String searchbarVal) {
+    // TODO: implement onSearchbarChanged
+      resources.sort((b, a) => // Swapping a and b made list work!
+        _similarity(a.resourceName, searchbarVal)
+            .compareTo(_similarity(b.resourceName, searchbarVal)));
+
+      setState(() {
+        resources = resources;
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,54 +39,46 @@ class _ResourcePageState extends State<ResourcePage> {
     return MaterialApp(
       theme: themeData,
       home: Scaffold(
-        appBar: AppBar(title: const Text('Resources Page')), // does not display yet on screen
-        body: const Padding( padding: EdgeInsets.all(8.0)),
-      ),
-    );
-  }
-}
-
-
-
-
-
-class ResourcesPage extends StatelessWidget { // Stateless scaffolding
-  
-// Most of searchbar design from ChatGPT
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
       appBar: AppBar(
         title: const Text('Mental Health Resources'), 
-        // note to self: actions[] was here, deleted to get rid of search button
-          bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(48.0),
+          bottom:  PreferredSize(
+            preferredSize: const Size.fromHeight(48.0),
             child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: RescSearchBar()
+              padding: const EdgeInsets.all(8.0),
+              child: RescSearchBar(listener: this)
             ),
           ),
       ),
-      body: DynamicLister() // Calls the stateful list widget
-    
-      
+      body: DynamicLister(resources: resources,) // Calls the stateful list widget
+    )
     );
   }
 }
+    
+
 
 class RescSearchBar extends StatefulWidget { // Allows search bar to manipulate the list.
-  const RescSearchBar({super.key});
+  final SearchBarChangeListener listener;
+  const RescSearchBar({super.key, required this.listener});
+
 
   @override
   State<RescSearchBar> createState() => _RescSearchBarState();
 }
 
 class _RescSearchBarState extends State<RescSearchBar> {
+  
   @override
   Widget build(BuildContext context) {
     return TextField(
-                //onChanged: (String newString){},
-                decoration: InputDecoration(
+                onChanged: (newText){
+                  setState(() {
+                    widget.listener.onSearchbarChanged(newText);
+                    
+                    
+                  });
+                },
+                decoration: const InputDecoration(
                   hintText: 'Search...', // empty text in search bar
                   border: OutlineInputBorder(),
                 ),
@@ -84,32 +90,42 @@ class _RescSearchBarState extends State<RescSearchBar> {
 
 
 class DynamicLister extends StatefulWidget {
-  const DynamicLister({super.key});
+  const DynamicLister({super.key, required this.resources});
+  final List<Resource> resources;
   
 
   @override
   State<DynamicLister> createState() => _DynamicListerState();
+
+  
+
+
 }
 
 class _DynamicListerState extends State<DynamicLister> {
-  List<Resource> resources = sampleLists;
+
+ 
+  
+  
   @override
   Widget build(BuildContext context) {
+
+
+
     return ListView.builder(
-        itemCount: resources.length,
+        itemCount: widget.resources.length,
         itemBuilder: (context, index) {
-          final resource = resources[index];
+          final finalResource = widget.resources[index];
+          
           return ListTile(
-            title: Text(resource.resourceName),
+            title: Text(finalResource.resourceName),
             subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start,
              children: [
-          Text(resource.resourceDesc),
-          Text(resource.resourceURL,
-            style: const TextStyle(
-              fontStyle: FontStyle.italic,
-              color: Color.fromARGB(255, 32, 104, 163),
-            ),
-          ),
+          Text(finalResource.resourceDesc),
+          ElevatedButton(onPressed: () => _launchURL(finalResource.resourceURL), child: Text(finalResource.resourceURL, style: const TextStyle(fontStyle: FontStyle.italic,
+              color: Color.fromARGB(255, 32, 104, 163),)
+              )
+              ),
         ],
             ),
             // text: Text(resource.resourceURL),
@@ -118,4 +134,31 @@ class _DynamicListerState extends State<DynamicLister> {
         },
     );
   }
+}
+
+
+// Function to calculate similarity between two strings (generated by ChatGPT)
+  double _similarity(String a, String b) {
+   
+    int matchingChars = 0;
+    for (int i = 0; i < a.length && i < b.length; i++) {
+      if (a[i] == b[i]) {
+        matchingChars++;
+      }
+    }
+    return matchingChars / a.length; // Similarity ratio
+  }
+
+Future<void> _launchURL(String url) async { // based on ChatGPT, launches the URL when clicked.
+    Uri workingUri = Uri.parse(url);
+    if (await canLaunchUrl(workingUri)) {
+      await launchUrl(workingUri);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+abstract class SearchBarChangeListener {
+
+    void onSearchbarChanged(String value);
 }
