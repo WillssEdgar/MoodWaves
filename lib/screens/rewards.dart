@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class RewardsPage extends StatefulWidget {
   @override
@@ -7,8 +9,11 @@ class RewardsPage extends StatefulWidget {
 
 
 class _RewardsPageState extends State<RewardsPage> {
+
+  // final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final double progress = 100; // Change this value to test the button's behavior
   final double threshold = 100; // Threshold for the reward to be ready
+  final List<int> ranks = [0, 0, 0, 0]; // Initial ranks for each progress bar
 
   @override
   Widget build(BuildContext context) {
@@ -44,18 +49,19 @@ class _RewardsPageState extends State<RewardsPage> {
 
   Widget _buildHorizontalProgressBarWithButton(
       int index, double progress, double maxProgress, bool isButtonReady) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Rank: ${ranks[index]}',
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(width: 10),
-            SizedBox(
+  return Column(
+    mainAxisSize: MainAxisSize.min, 
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Rank: ${ranks[index]}',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(width: 10),
+          Flexible( 
+            child: SizedBox(
               height: 20,
-              width: 150, // Reduced width for shorter progress bars
+              width: 150,
               child: Stack(
                 children: <Widget>[
                   Container(
@@ -76,34 +82,38 @@ class _RewardsPageState extends State<RewardsPage> {
                 ],
               ),
             ),
-          ],
-        ),
-        Text('${ranks[index]} / ${threshold * (ranks[index] + 1)}',
-            style: const TextStyle(fontSize: 18)),
-        Center(
-          child: SizedBox(
-            width: 150, // Reduced width for a shorter button
-            child: ElevatedButton(
-              onPressed: isButtonReady
-                  ? () {
-                        setState(() {
-                          ranks[index] += 1; // Increase the rank for this progress bar
-                        });
-                        print('Reward collected for Rank ${ranks[index]}!');
-                      }
-                    : null,
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) {
-                    return isButtonReady ? Colors.green : Colors.grey;
-                  },
-                ),
+          ),
+        ],
+      ),
+      Text('${ranks[index]} / ${threshold * (ranks[index] + 1)}',
+          style: const TextStyle(fontSize: 18)),
+      Center(
+        child: SizedBox(
+          width: 150,
+          child: ElevatedButton(
+            onPressed: isButtonReady
+                ? () {
+                    setState(() {
+                      ranks[index] += 1;
+                    });
+                    // firestore.collection('rewards').doc('user1').update({ 'rank': ranks[index]});
+                    print('Reward collected for Rank ${ranks[index]}!');
+                  }
+                : null,
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                (Set<MaterialState> states) {
+                  return isButtonReady ? Colors.green : Colors.grey;
+                },
               ),
-              child: const Text('Collect Reward'),
             ),
+            child: const Text('Collect Reward'),
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }
+}
+
+
