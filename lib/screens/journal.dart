@@ -19,14 +19,15 @@ class _JournalPageState extends State<JournalPage> {
     _loadEntries();
     _printCurrentSavedEntries();
   }
-  Future<void> _printCurrentSavedEntries() async {
-  final prefs = await SharedPreferences.getInstance();
-  print(prefs.getString('journalEntries'));
-}
-Future<void> _signOut() async {
-  await FirebaseAuth.instance.signOut();
-}
 
+  Future<void> _printCurrentSavedEntries() async {
+    final prefs = await SharedPreferences.getInstance();
+    print(prefs.getString('journalEntries'));
+  }
+
+  // Future<void> _signOut() async {
+  //   await FirebaseAuth.instance.signOut();
+  // }
 
   Future<void> _loadEntries() async {
     final prefs = await SharedPreferences.getInstance();
@@ -42,7 +43,8 @@ Future<void> _signOut() async {
 
   Future<void> _saveEntries() async {
     final prefs = await SharedPreferences.getInstance();
-    final String entriesJson = json.encode(entries.map((e) => e.toJson()).toList());
+    final String entriesJson =
+        json.encode(entries.map((e) => e.toJson()).toList());
     await prefs.setString('journalEntries', entriesJson);
   }
 
@@ -117,7 +119,8 @@ Future<void> _signOut() async {
             final entry = entries[index];
             return ListTile(
               title: Text(entry.title),
-              subtitle: Text("${entry.date} - Mood: ${entry.mood ?? 'Not specified'}"),
+              subtitle: Text(
+                  "${entry.date} - Mood: ${entry.mood ?? 'Not specified'}"),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -125,7 +128,8 @@ Future<void> _signOut() async {
                       entry: entry,
                       onSave: (updatedEntry) {
                         setState(() {
-                          int foundIndex = entries.indexWhere((e) => e.id == updatedEntry.id);
+                          int foundIndex = entries
+                              .indexWhere((e) => e.id == updatedEntry.id);
                           if (foundIndex != -1) {
                             entries[foundIndex] = updatedEntry;
                             _saveEntries(); // Save entries after updating
@@ -140,54 +144,52 @@ Future<void> _signOut() async {
           },
         ),
       ),
-      
-floatingActionButton: ElevatedButton(
-  onPressed: () async {
-    await _signOut();
-    // Optionally, navigate back to the login screen or reset the app state post-sign-out
-    Navigator.of(context).pushReplacementNamed('/login'); // Assuming '/login' is your login screen route
-  },
-  child: Text('Sign Out'),
-)
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Create an empty JournalEntry
+          final newEntry = JournalEntry(
+            id: DateTime.now()
+                .toString(), // Unique ID based on the current time
+            title: '', // Empty title
+            body: '', // Empty body
+            date: DateTime.now(), // Current date and time
+            mood: null, // No mood specified
+          );
 
+          // Navigate to the JournalEntryEditScreen with the new, empty entry
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => JournalEntryEditScreen(
+                entry: newEntry,
+                onSave: (updatedEntry) {
+                  // Add the new entry to the list if it's not empty (or implement your own logic here)
+                  if (updatedEntry.title.isNotEmpty ||
+                      updatedEntry.body.isNotEmpty) {
+                    setState(() {
+                      entries.add(updatedEntry);
+                    });
+                    _saveEntries(); // Save entries after adding a new one
+                  }
+                },
+              ),
+            ),
+          );
+        },
+        tooltip: 'Add Entry',
+        child: const Icon(
+          Icons.add,
+          color: Colors.teal, // Add this line
+        ),
+      ),
     );
   }
 }
 
-
-
-// FloatingActionButton(
-//   onPressed: () {
-//     // Create an empty JournalEntry
-//     final newEntry = JournalEntry(
-//       id: DateTime.now().toString(), // Unique ID based on the current time
-//       title: '', // Empty title
-//       body: '', // Empty body
-//       date: DateTime.now(), // Current date and time
-//       mood: null, // No mood specified
-//     );
-
-//     // Navigate to the JournalEntryEditScreen with the new, empty entry
-//     Navigator.of(context).push(
-//       MaterialPageRoute(
-//         builder: (context) => JournalEntryEditScreen(
-//           entry: newEntry,
-//           onSave: (updatedEntry) {
-//             // Add the new entry to the list if it's not empty (or implement your own logic here)
-//             if (updatedEntry.title.isNotEmpty || updatedEntry.body.isNotEmpty) {
-//               setState(() {
-//                 entries.add(updatedEntry);
-//               });
-//               _saveEntries(); // Save entries after adding a new one
-//             }
-//           },
-//         ),
-//       ),
-//     );
+//  ElevatedButton(
+//   onPressed: () async {
+//     await _signOut();
+//     // Optionally, navigate back to the login screen or reset the app state post-sign-out
+//     Navigator.of(context).pushReplacementNamed('/login'); // Assuming '/login' is your login screen route
 //   },
-//   tooltip: 'Add Entry',
-// child: const Icon(
-//   Icons.add,
-//   color: Colors.teal, // Add this line
-// ),
-// ),
+//   child: Text('Sign Out'),
+// )
