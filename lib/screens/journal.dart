@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mood_waves/classes/journalEntry_Class.dart';
 import 'package:mood_waves/screens/journalEntry.dart'; // Ensure this matches the location of your JournalEntryEditScreen class
@@ -21,6 +22,9 @@ class _JournalPageState extends State<JournalPage> {
   Future<void> _printCurrentSavedEntries() async {
   final prefs = await SharedPreferences.getInstance();
   print(prefs.getString('journalEntries'));
+}
+Future<void> _signOut() async {
+  await FirebaseAuth.instance.signOut();
 }
 
 
@@ -136,41 +140,54 @@ class _JournalPageState extends State<JournalPage> {
           },
         ),
       ),
-floatingActionButton: FloatingActionButton(
-  onPressed: () {
-    // Create an empty JournalEntry
-    final newEntry = JournalEntry(
-      id: DateTime.now().toString(), // Unique ID based on the current time
-      title: '', // Empty title
-      body: '', // Empty body
-      date: DateTime.now(), // Current date and time
-      mood: null, // No mood specified
-    );
-
-    // Navigate to the JournalEntryEditScreen with the new, empty entry
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => JournalEntryEditScreen(
-          entry: newEntry,
-          onSave: (updatedEntry) {
-            // Add the new entry to the list if it's not empty (or implement your own logic here)
-            if (updatedEntry.title.isNotEmpty || updatedEntry.body.isNotEmpty) {
-              setState(() {
-                entries.add(updatedEntry);
-              });
-              _saveEntries(); // Save entries after adding a new one
-            }
-          },
-        ),
-      ),
-    );
+      
+floatingActionButton: ElevatedButton(
+  onPressed: () async {
+    await _signOut();
+    // Optionally, navigate back to the login screen or reset the app state post-sign-out
+    Navigator.of(context).pushReplacementNamed('/login'); // Assuming '/login' is your login screen route
   },
-  tooltip: 'Add Entry',
-child: const Icon(
-  Icons.add,
-  color: Colors.teal, // Add this line
-),
-),
+  child: Text('Sign Out'),
+)
+
     );
   }
 }
+
+
+
+// FloatingActionButton(
+//   onPressed: () {
+//     // Create an empty JournalEntry
+//     final newEntry = JournalEntry(
+//       id: DateTime.now().toString(), // Unique ID based on the current time
+//       title: '', // Empty title
+//       body: '', // Empty body
+//       date: DateTime.now(), // Current date and time
+//       mood: null, // No mood specified
+//     );
+
+//     // Navigate to the JournalEntryEditScreen with the new, empty entry
+//     Navigator.of(context).push(
+//       MaterialPageRoute(
+//         builder: (context) => JournalEntryEditScreen(
+//           entry: newEntry,
+//           onSave: (updatedEntry) {
+//             // Add the new entry to the list if it's not empty (or implement your own logic here)
+//             if (updatedEntry.title.isNotEmpty || updatedEntry.body.isNotEmpty) {
+//               setState(() {
+//                 entries.add(updatedEntry);
+//               });
+//               _saveEntries(); // Save entries after adding a new one
+//             }
+//           },
+//         ),
+//       ),
+//     );
+//   },
+//   tooltip: 'Add Entry',
+// child: const Icon(
+//   Icons.add,
+//   color: Colors.teal, // Add this line
+// ),
+// ),
