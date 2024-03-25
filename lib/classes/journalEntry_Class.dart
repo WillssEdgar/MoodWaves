@@ -1,18 +1,18 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 class JournalEntry {
   final String id;
   final String title;
   final String body;
   final DateTime date;
-  final String? mood; // Optional: to capture the user's mood
 
   JournalEntry({
     required this.id,
     required this.title,
     required this.body,
     required this.date,
-    this.mood,
   });
 
   // Convert a JournalEntry instance into a Map
@@ -21,8 +21,7 @@ class JournalEntry {
       'id': id,
       'title': title,
       'body': body,
-      'date': date.toIso8601String(), // Convert DateTime to a String
-      'mood': mood,
+      'date': DateFormat('yyyy-MM-dd').format(date),
     };
   }
 
@@ -32,8 +31,8 @@ class JournalEntry {
       id: json['id'],
       title: json['title'],
       body: json['body'],
-      date: DateTime.parse(json['date']), // Convert String to DateTime
-      mood: json['mood'],
+      date: DateTime.parse(
+          json['date'] as String), // Correctly parses 'yyyy-MM-dd' format
     );
   }
 }
