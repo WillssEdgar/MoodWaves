@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mood_waves/classes/journalEntry_Class.dart';
 import 'package:mood_waves/widgets/pie_chart.dart';
@@ -7,9 +9,9 @@ import 'package:mood_waves/classes/mood.dart';
 import 'package:mood_waves/classes/mood_info.dart';
 import 'package:mood_waves/widgets/calendar_widget.dart';
 import 'package:mood_waves/widgets/mood_slider.dart';
-//import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Widget for displaying and managing Mood Entries.
 class MoodLog extends StatefulWidget {
   const MoodLog({Key? key}) : super(key: key);
 
@@ -23,8 +25,9 @@ class _MoodLogState extends State<MoodLog> {
   late MoodInfo moodInfo = MoodInfo(DateFormat('yyyy-MM-dd').format(today),
       [Mood("No moods entered for this date", Colors.blueGrey.shade100)]);
   late Map<String, Color> moodColors = {};
-  Color _selectedColor = Colors.greenAccent.shade400;
+  Color _selectedColor = Colors.yellow.shade400;
 
+  /// Fetches mood entry for the selected day.
   Future<void> _fetchMoodEntry(DateTime selectedDay) async {
     if (userId.isNotEmpty) {
       final querySnapshot = await FirebaseFirestore.instance
@@ -51,10 +54,9 @@ class _MoodLogState extends State<MoodLog> {
         }).toList();
       } else {
         moods = [
-          Mood("No moods entered for this date", Colors.blueGrey.shade100)
+          Mood("No moods entered \n for this date", Colors.blueGrey.shade100)
         ];
       }
-
       setState(() {
         moodInfo =
             MoodInfo(DateFormat('yyyy-MM-dd').format(selectedDay), moods);
@@ -62,6 +64,7 @@ class _MoodLogState extends State<MoodLog> {
     }
   }
 
+  /// Maps mood names to corresponding colors.
   Color getColorForMoodName(String moodName) {
     // Here you can associate mood names with colors
     switch (moodName.toLowerCase()) {
@@ -88,6 +91,8 @@ class _MoodLogState extends State<MoodLog> {
   }
 
   late List<JournalEntry> entries = [];
+
+  /// Fetches journal entries for the selected day.
   Future<void> _fetchJournalEntries(DateTime selectedDay) async {
     if (userId.isNotEmpty) {
       String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
@@ -108,6 +113,7 @@ class _MoodLogState extends State<MoodLog> {
     }
   }
 
+  /// Adds mood entries for the selected day.
   Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
     if (userId.isNotEmpty) {
       String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
@@ -144,6 +150,7 @@ class _MoodLogState extends State<MoodLog> {
     }
   }
 
+  /// Updates the variable today and updates the journal entries and graph
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       today = day;
@@ -153,6 +160,7 @@ class _MoodLogState extends State<MoodLog> {
     _fetchMoodEntry(day);
   }
 
+  /// Maps each color to a mood.
   final Map<Color, String> colorNames = {
     Colors.yellow.shade400: 'Happy',
     Colors.greenAccent.shade400: 'Peaceful',
@@ -164,21 +172,12 @@ class _MoodLogState extends State<MoodLog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Mood Log"),
-        centerTitle: true,
-      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                "Selected Day: ${DateFormat('yyyy-MM-dd').format(today)}",
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
               const SizedBox(height: 20),
               Center(
                 child: SizedBox(
@@ -190,45 +189,53 @@ class _MoodLogState extends State<MoodLog> {
                   ),
                 ),
               ),
+              Text(
+                "Selected Day: ${DateFormat('yyyy-MM-dd').format(today)}",
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 30),
               const Text(
                 "Mood Graph",
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                  fontSize: 30,
                 ),
               ),
               const SizedBox(height: 10),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 200,
-                      width: 300,
-                      child: MyPieChart(moodLog: moodInfo),
+                  Center(
+                    child: Expanded(
+                      child: SizedBox(
+                        height: 200,
+                        width: 300,
+                        child: MyPieChart(moodLog: moodInfo),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 20),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: buildLegend(moodInfo),
                   )
                 ],
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               Visibility(
                 visible: DateFormat('yyyy-MM-dd').format(today) ==
                     DateFormat('yyyy-MM-dd').format(DateTime.now()),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Create a New Mood",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                    const Center(
+                      child: Text(
+                        "Create a New Mood",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -254,30 +261,34 @@ class _MoodLogState extends State<MoodLog> {
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: () {
-                        _addToMoodEntries(
-                            today, colorNames[_selectedColor] ?? 'Unkown');
-                        _fetchMoodEntry(today);
-                      },
-                      child: const Text("Submit Mood"),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _addToMoodEntries(
+                              today, colorNames[_selectedColor] ?? 'Unkown');
+                          _fetchMoodEntry(today);
+                        },
+                        child: const Text("Submit Mood"),
+                      ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 60),
               if (entries.isNotEmpty) ...[
                 const Text(
-                  "Journal Entry",
+                  "Journal Entries",
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                    fontSize: 30,
                   ),
                 ),
                 const SizedBox(height: 10),
-                Column(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: entries
                       .map((entry) => DisplayJournal(journalEntry: entry))
                       .toList(),
@@ -300,6 +311,7 @@ class _MoodLogState extends State<MoodLog> {
   }
 }
 
+/// Creates the widget that displays the journal.
 class DisplayJournal extends StatelessWidget {
   final JournalEntry journalEntry;
 
@@ -308,36 +320,33 @@ class DisplayJournal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            journalEntry.title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          journalEntry.title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
           ),
-          const SizedBox(height: 8),
-          Text(
-            DateFormat('yyyy-MM-dd').format(journalEntry.date),
-            style: const TextStyle(
-              fontStyle: FontStyle.italic,
-              fontSize: 14,
-              color: Colors.grey,
-            ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          DateFormat('yyyy-MM-dd').format(journalEntry.date),
+          style: const TextStyle(
+            fontStyle: FontStyle.italic,
+            fontSize: 14,
+            color: Colors.grey,
           ),
-          const SizedBox(height: 8),
-          Text(
-            journalEntry.body,
-            style: const TextStyle(
-              fontSize: 16,
-            ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          journalEntry.body,
+          style: const TextStyle(
+            fontSize: 16,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

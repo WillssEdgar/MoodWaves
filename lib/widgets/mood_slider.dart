@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// A widget that displays a slider with a gradient background representing different moods.
+
 class MoodSlider extends StatefulWidget {
   final Function(double) onColorSelected;
 
+  /// Constructor for the MoodSlider widget.
   const MoodSlider({Key? key, required this.onColorSelected}) : super(key: key);
 
   @override
@@ -12,6 +15,7 @@ class MoodSlider extends StatefulWidget {
 class _MoodSliderState extends State<MoodSlider> {
   double _sliderValue = 0.0;
 
+  /// Updates the selected mood color based on the slider value.
   void _updateColor(double value) {
     setState(() {
       _sliderValue = value;
@@ -45,6 +49,7 @@ class _MoodSliderState extends State<MoodSlider> {
   }
 }
 
+/// The list of colors representing different moods in the gradient.
 List<Color> timelineColors = [
   Colors.yellow.shade400,
   Colors.greenAccent.shade400,
@@ -53,6 +58,7 @@ List<Color> timelineColors = [
   Colors.red.shade400,
 ];
 
+/// The stops for the gradient colors.
 List<double> timelineStops = [
   0.0,
   0.25,

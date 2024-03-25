@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:table_calendar/table_calendar.dart';
 
+/// Creates the Calendar for the Mood Log Page
 class MyCalendar extends StatelessWidget {
   final DateTime selectedDay;
   final Function(DateTime, DateTime) onDaySelected;
