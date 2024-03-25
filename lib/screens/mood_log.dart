@@ -210,7 +210,7 @@ class _MoodLogState extends State<MoodLog> {
                     child: Expanded(
                       child: SizedBox(
                         height: 200,
-                        width: 300,
+                        width: 200,
                         child: MyPieChart(moodLog: moodInfo),
                       ),
                     ),
