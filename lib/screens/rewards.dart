@@ -25,7 +25,8 @@ class _RewardsPageState extends State<RewardsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('Your Progress', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text('Your Progress',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             Expanded(
               child: GridView.count(

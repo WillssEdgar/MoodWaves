@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mood_waves/screens/mood_log.dart';
 import 'resources.dart';
 import 'dashboard.dart';
 import 'events.dart';
@@ -19,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
     DashboardPage(),
     JournalPage(),
     RewardsPage(),
+    MoodLog(),
   ];
 
   void _onTabTapped(int index) {
@@ -30,14 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Colors.teal,
+      backgroundColor: Colors.teal,
       appBar: AppBar(
         title: const Text(
           'Mood Waves',
-          style: TextStyle(color: Colors.white), 
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.teal, 
+        backgroundColor: Colors.teal,
         centerTitle: true,
       ),
 
@@ -54,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.library_books),
             label: 'Resources',
           ),
-                    BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.event),
             label: 'Events',
           ),
@@ -62,7 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.analytics),
             label: 'Dashboard',
           ),
-
           BottomNavigationBarItem(
             icon: Icon(Icons.assignment),
             label: 'Journal',
@@ -71,12 +71,16 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.emoji_events),
             label: 'Rewards',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.mood),
+            label: 'Mood Log',
+          ),
         ],
 
         backgroundColor: Colors.black, // BottomNavigationBar background color
         unselectedItemColor: Colors.grey, // Unselected item color
-        type:
-            BottomNavigationBarType.fixed, 
+        selectedItemColor: Colors.teal,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }
