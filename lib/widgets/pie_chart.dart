@@ -54,9 +54,9 @@ class MyPieChart extends StatelessWidget {
           color: colors[index],
           value: moodCount.values.elementAt(index).toDouble(),
           title: '${percentage.toStringAsFixed(1)}%',
-          radius: 50,
+          radius: 45,
           titleStyle: const TextStyle(
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
@@ -95,7 +95,12 @@ Widget buildLegend(MoodInfo moodLog) {
                     color: colors[index],
                   ),
                   const SizedBox(width: 8),
-                  Text(colorNames[index]),
+                  Flexible(
+                    child: Text(
+                      colorNames[index],
+                      softWrap: true,
+                    ),
+                  ),
                 ],
               ),
             );

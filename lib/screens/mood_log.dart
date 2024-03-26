@@ -54,7 +54,7 @@ class _MoodLogState extends State<MoodLog> {
         }).toList();
       } else {
         moods = [
-          Mood("No moods entered \n for this date", Colors.blueGrey.shade100)
+          Mood("No moods entered for this date", Colors.blueGrey.shade100)
         ];
       }
       setState(() {
@@ -100,7 +100,7 @@ class _MoodLogState extends State<MoodLog> {
           .collection('users')
           .doc(userId)
           .collection('journalEntries')
-          .where('id', isEqualTo: formattedDate)
+          .where('date', isEqualTo: formattedDate)
           .get();
 
       final entriesList = querySnapshot.docs
@@ -286,11 +286,13 @@ class _MoodLogState extends State<MoodLog> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Row(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: entries
-                      .map((entry) => DisplayJournal(journalEntry: entry))
+                      .map((entry) => Align(
+                          alignment: Alignment.centerLeft,
+                          child: DisplayJournal(journalEntry: entry)))
                       .toList(),
                 ),
               ] else ...[

@@ -9,15 +9,20 @@ class DashboardWidget extends StatelessWidget {
     // Obtain screen size
     final Size screenSize = MediaQuery.of(context).size;
 
-    return Column(
+    return ListView(
       children: [
-        SizedBox(
-          // Assign a portion of the screen height to the DetailsCard
-          height:
-              screenSize.height * 0.8, // For example, 80% of the screen height
-          child: const DetailsCard(),
+        Column(
+          children: [
+            SizedBox(
+              // Assign a portion of the screen height to the DetailsCard
+              height: screenSize.height *
+                  0.8, // For example, 80% of the screen height
+              child: const DetailsCard(),
+            ),
+
+            // You can add more widgets here if needed
+          ],
         ),
-        // You can add more widgets here if needed
       ],
     );
   }
