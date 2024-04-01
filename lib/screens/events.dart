@@ -11,6 +11,27 @@ class EventsPage extends StatelessWidget {
         'author': 'Campus Housing',
         'date': 'Today',
       },
+      {
+        'title':'',
+        'content':'',
+        'author':'',
+        'date':'',
+
+      },
+      {
+        'title':'',
+        'content':'',
+        'author':'',
+        'date':'',
+
+      },
+      {
+        'title':'',
+        'content':'',
+        'author':'',
+        'date':'',
+
+      },
     ];
 
     return Scaffold(
