@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'createAccount.dart';
+import 'create_account.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailOrUsernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  CreateAccountScreen createAccountScreen = CreateAccountScreen();
+  CreateAccountScreen createAccountScreen = const CreateAccountScreen();
   bool _isLoading =
       false; // This should be mutable if you plan to change its value
 

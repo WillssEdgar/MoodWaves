@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
 class EventsPage extends StatelessWidget {
+  const EventsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Dummy data for feed items
     final List<Map<String, String>> feedItems = [
       {
         'title': 'Fire at Seahawk village',
-        'content': 'I would love to have a fire and get into the pool at Seahawk village',
+        'content':
+            'I would love to have a fire and get into the pool at Seahawk village',
         'author': 'Campus Housing',
         'date': 'Today',
       },
