@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           } else if (snapshot.hasError) {
             return const Center(child: Text('Something went wrong!'));
           } else if (snapshot.hasData) {
-            return HomeScreen(); // User is signed in
+            return const HomeScreen(); // User is signed in
           } else {
             return const LoginScreen(); // Replace with your sign-in screen
           }
