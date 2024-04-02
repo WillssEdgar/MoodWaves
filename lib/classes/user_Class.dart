@@ -1,15 +1,12 @@
 // This file contains the user class
 // This class is used to store the user data
 
-
-class User{
+class User {
   String? name;
   String? email;
   String? uid;
-  
-  User({this.name, this.email,required this.uid});
 
-  
+  User({this.name, this.email, required this.uid});
 
   Map<String, dynamic> toMap() {
     return {
@@ -36,4 +33,3 @@ var sampleUsers = [
   User(name: "Jane", email: "jane@example.com", uid: "4325rfdawr23f32d"),
   User(name: "Jannet", email: "jannet@example.com", uid: "e3fhjiuh43ignis23r"),
 ];
-

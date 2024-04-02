@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:mood_waves/classes/journalEntry_Class.dart';
+import 'package:mood_waves/classes/journal_entry_class.dart';
 import 'package:mood_waves/widgets/pie_chart.dart';
 import 'package:mood_waves/classes/mood.dart';
 import 'package:mood_waves/classes/mood_info.dart';

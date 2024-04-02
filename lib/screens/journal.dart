@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mood_waves/classes/journalEntry_Class.dart';
-import 'package:mood_waves/screens/journalEntry.dart'; // Ensure this matches the location of your JournalEntryEditScreen class
+import 'package:mood_waves/classes/journal_entry_class.dart';
+import 'package:mood_waves/screens/journal_entry.dart'; // Ensure this matches the location of your JournalEntryEditScreen class
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -25,24 +24,25 @@ class _JournalPageState extends State<JournalPage> {
   //   await FirebaseAuth.instance.signOut();
   // }
 
-Future<void> _loadEntries() async {
-  final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-  if (userId.isNotEmpty) {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('journalEntries')
-        .orderBy('date', descending: true) // Assuming you want to order by date
-        .get();
+  Future<void> _loadEntries() async {
+    final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    if (userId.isNotEmpty) {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('journalEntries')
+          .orderBy('date',
+              descending: true) // Assuming you want to order by date
+          .get();
 
-    final entriesList = querySnapshot.docs.map((doc) => JournalEntry.fromJson(doc.data())).toList();
-    setState(() {
-      entries = entriesList;
-    });
+      final entriesList = querySnapshot.docs
+          .map((doc) => JournalEntry.fromJson(doc.data()))
+          .toList();
+      setState(() {
+        entries = entriesList;
+      });
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,8 @@ Future<void> _loadEntries() async {
                       onSave: (JournalEntry updatedEntry) async {
                         // Refresh entries from Firestore after an update
                         await _loadEntries();
-                        Navigator.of(context).pop(); // Optionally, pop the edit screen automatically
+                        Navigator.of(context)
+                            .pop(); // Optionally, pop the edit screen automatically
                       },
                     ),
                   ),
@@ -81,7 +82,8 @@ Future<void> _loadEntries() async {
         onPressed: () {
           // Create an empty JournalEntry
           final newEntry = JournalEntry(
-            id: DateTime.now().toString(), // Unique ID based on the current time
+            id: DateTime.now()
+                .toString(), // Unique ID based on the current time
             title: '', // Empty title
             body: '', // Empty body
             date: DateTime.now(), // Current date and time
@@ -93,9 +95,11 @@ Future<void> _loadEntries() async {
               builder: (context) => JournalEntryEditScreen(
                 entry: newEntry,
                 onSave: (JournalEntry updatedEntry) async {
-                  if (updatedEntry.title.isNotEmpty || updatedEntry.body.isNotEmpty) {
+                  if (updatedEntry.title.isNotEmpty ||
+                      updatedEntry.body.isNotEmpty) {
                     await _loadEntries(); // Refresh the list from Firestore
-                    Navigator.of(context).pop(); // Optionally, pop the edit screen automatically
+                    Navigator.of(context)
+                        .pop(); // Optionally, pop the edit screen automatically
                   }
                 },
               ),
