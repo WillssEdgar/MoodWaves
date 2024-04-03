@@ -21,29 +21,27 @@ class _RewardsPageState extends State<RewardsPage> {
       appBar: AppBar(
         title: const Text('Rewards'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('Your Progress',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 1,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 10,
-                childAspectRatio: 3, // Adjusted for smaller progress bars
-                children: List.generate(ranks.length, (index) {
-                  double progress = ranks[index] * threshold;
-                  bool isButtonReady = progress >= threshold;
-                  return _buildHorizontalProgressBarWithButton(
-                      index, progress, threshold, isButtonReady);
-                }),
-              ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text('Your Progress',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 20),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 1,
+              crossAxisSpacing: 20,
+              mainAxisSpacing: 10,
+              childAspectRatio: 3, // Adjusted for smaller progress bars
+              children: List.generate(ranks.length, (index) {
+                double progress = ranks[index] * threshold;
+                bool isButtonReady = progress >= threshold;
+                return _buildHorizontalProgressBarWithButton(
+                    index, progress, threshold, isButtonReady);
+              }),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

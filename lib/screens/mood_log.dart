@@ -204,13 +204,11 @@ class _MoodLogState extends State<MoodLog> {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Center(
-                    child: Expanded(
-                      child: SizedBox(
-                        height: 200,
-                        width: 200,
-                        child: MyPieChart(moodLog: moodInfo),
-                      ),
+                  Expanded(
+                    child: SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: MyPieChart(moodLog: moodInfo),
                     ),
                   ),
                   const SizedBox(width: 15),

@@ -1,13 +1,39 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mood_waves/data/card_details.dart';
 import 'package:mood_waves/widgets/custom_card_widget.dart';
 
-class DetailsCard extends StatelessWidget {
-  const DetailsCard({super.key});
+class DetailsCard extends StatefulWidget {
+  const DetailsCard({Key? key}) : super(key: key);
+
+  @override
+  _DetailsCardState createState() => _DetailsCardState();
+}
+
+class _DetailsCardState extends State<DetailsCard> {
+  late String consecutiveDays = '';
+  final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+  @override
+  void initState() {
+    super.initState();
+    updateConsecutiveDays();
+  }
+
+  Future<void> updateConsecutiveDays() async {
+    final streak = await calculateStreakForPerson(userId);
+    setState(
+      () {
+        consecutiveDays = streak.toString();
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final studentDetails = CardDetails();
+    final studentDetails = CardDetails(consecutiveDays: consecutiveDays);
     double cardHeight = 150.0; // Adjust based on your design
     double verticalSpacing = 12.0; // Adjust based on your design
     double headerPadding = 20.0; // Additional padding if needed
@@ -47,4 +73,42 @@ class DetailsCard extends StatelessWidget {
       ),
     );
   }
+}
+
+int longestConsecutiveStreak(List<DateTime> dates) {
+  final datesSet = dates.toSet();
+
+  int longestStreak = 0;
+  int currentStreak = 1;
+
+  for (final date in datesSet) {
+    if (datesSet.contains(date.add(const Duration(days: 1)))) {
+      currentStreak++;
+    } else {
+      longestStreak =
+          longestStreak > currentStreak ? longestStreak : currentStreak;
+      currentStreak = 1;
+    }
+  }
+
+  return longestStreak;
+}
+
+// Function to fetch dates for a particular person and calculate the streak
+Future<int> calculateStreakForPerson(String userId) async {
+  final querySnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('moodEntries')
+      .orderBy('id', descending: true)
+      .get();
+
+  final dateFormat = DateFormat('yyyy-MM-dd');
+  final dates =
+      querySnapshot.docs.map((doc) => dateFormat.parse(doc['id'])).toList();
+
+  dates.sort((b, a) => a.compareTo(b));
+  final streak = longestConsecutiveStreak(dates);
+
+  return streak;
 }
