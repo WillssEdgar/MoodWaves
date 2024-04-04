@@ -15,6 +15,5 @@ class CardDetails {
         title: "Your Reward Level:"),
     CardModel(
         icon: Icons.local_fire_department, value: "4", title: "Log Streak:"),
-    CardModel(icon: Icons.mood, value: "Happy", title: "Mood:"),
   ];
 }
