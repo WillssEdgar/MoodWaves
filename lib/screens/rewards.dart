@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -99,7 +100,9 @@ class RewardsPageState extends State<RewardsPage> {
                         ranks[index] += 1;
                       });
                       // firestore.collection('rewards').doc('user1').update({ 'rank': ranks[index]});
-                      print('Reward collected for Rank ${ranks[index]}!');
+                      if (kDebugMode) {
+                        print('Reward collected for Rank ${ranks[index]}!');
+                      }
                     }
                   : null,
               style: ButtonStyle(

@@ -107,7 +107,6 @@ class JournalPageState extends State<JournalPage> {
             if (updatedEntry.title.isNotEmpty || updatedEntry.body.isNotEmpty) {
               await _loadEntries(); // Refresh the list from Firestore
 
-              // Use the 'mounted' check before interacting with the UI
               if (mounted) {
                 Navigator.of(currentContext).pop(); // Optionally, pop the edit screen automatically
               }
