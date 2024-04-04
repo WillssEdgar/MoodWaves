@@ -16,7 +16,7 @@ class _ResourcePageState extends State<ResourcesPage>
 
   @override
   void onSearchbarChanged(String searchbarVal) {
-    // TODO: implement onSearchbarChanged
+    // implement onSearchbarChanged
     resources.sort((b, a) => // Swapping a and b made list work!
         _similarity(a.resourceName, searchbarVal)
             .compareTo(_similarity(b.resourceName, searchbarVal)));

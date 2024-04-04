@@ -8,10 +8,10 @@ class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
 
   @override
-  _JournalPageState createState() => _JournalPageState();
+  JournalPageState createState() => JournalPageState();
 }
 
-class _JournalPageState extends State<JournalPage> {
+class JournalPageState extends State<JournalPage> {
   List<JournalEntry> entries = []; // Initializes with an empty list
 
   @override
@@ -65,10 +65,17 @@ class _JournalPageState extends State<JournalPage> {
                     builder: (context) => JournalEntryEditScreen(
                       entry: entry,
                       onSave: (JournalEntry updatedEntry) async {
+                        // Store a reference to the Navigator's state before the async gap.
+                        final navigator = Navigator.of(context);
+
                         // Refresh entries from Firestore after an update
                         await _loadEntries();
-                        Navigator.of(context)
-                            .pop(); // Optionally, pop the edit screen automatically
+
+                        // Check if the widget is still mounted before calling `pop`
+                        if (navigator.mounted) {
+                          navigator
+                              .pop(); // Optionally, pop the edit screen automatically
+                        }
                       },
                     ),
                   ),
@@ -79,39 +86,44 @@ class _JournalPageState extends State<JournalPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Create an empty JournalEntry
-          final newEntry = JournalEntry(
-            id: DateTime.now()
-                .toString(), // Unique ID based on the current time
-            title: '', // Empty title
-            body: '', // Empty body
-            date: DateTime.now(), // Current date and time
-          );
+  onPressed: () {
+    // Capture the context valid at the moment of button press
+    final BuildContext currentContext = context;
 
-          // Navigate to the JournalEntryEditScreen with the new, empty entry
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => JournalEntryEditScreen(
-                entry: newEntry,
-                onSave: (JournalEntry updatedEntry) async {
-                  if (updatedEntry.title.isNotEmpty ||
-                      updatedEntry.body.isNotEmpty) {
-                    await _loadEntries(); // Refresh the list from Firestore
-                    Navigator.of(context)
-                        .pop(); // Optionally, pop the edit screen automatically
-                  }
-                },
-              ),
-            ),
-          );
-        },
-        tooltip: 'Add Entry',
-        child: const Icon(
-          Icons.add,
-          color: Colors.teal,
+    // Create an empty JournalEntry
+    final newEntry = JournalEntry(
+      id: DateTime.now().toString(), // Unique ID based on the current time
+      title: '', // Empty title
+      body: '', // Empty body
+      date: DateTime.now(), // Current date and time
+    );
+
+    // Navigate to the JournalEntryEditScreen with the new, empty entry
+    Navigator.of(currentContext).push(
+      MaterialPageRoute(
+        builder: (context) => JournalEntryEditScreen(
+          entry: newEntry,
+          onSave: (JournalEntry updatedEntry) async {
+            if (updatedEntry.title.isNotEmpty || updatedEntry.body.isNotEmpty) {
+              await _loadEntries(); // Refresh the list from Firestore
+
+              // Use the 'mounted' check before interacting with the UI
+              if (mounted) {
+                Navigator.of(currentContext).pop(); // Optionally, pop the edit screen automatically
+              }
+            }
+          },
         ),
       ),
+    );
+  },
+  tooltip: 'Add Entry',
+  child: const Icon(
+    Icons.add,
+    color: Colors.teal,
+  ),
+),
+
     );
   }
 }

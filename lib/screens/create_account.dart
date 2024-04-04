@@ -6,10 +6,10 @@ class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
 
   @override
-  _CreateAccountScreenState createState() => _CreateAccountScreenState();
+  CreateAccountScreenState createState() => CreateAccountScreenState();
 }
 
-class _CreateAccountScreenState extends State<CreateAccountScreen> {
+class CreateAccountScreenState extends State<CreateAccountScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -71,10 +71,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
       Timestamp joinedTimestamp = Timestamp.now();
 
-      // Navigate to your app's home screen or display a success message
-      // Navigator.pushReplacementNamed(context, '/home');
-      print('User created successfully.');
+      // Make sure widget is still mounted before navigating or showing a snackbar
+      if (!mounted) return;
 
+      // Navigator.pushReplacementNamed(context, '/home');
       addUserToFirestore(
         _emailController.text.trim(),
         FirebaseAuth.instance.currentUser!.uid,
@@ -89,8 +89,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         ),
       );
     } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
       // Handle errors, such as email already in use, weak password, etc.
-      print(e.message);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.message ?? 'An error occurred. Please try again.'),
@@ -98,9 +99,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         ),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
