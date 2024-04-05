@@ -24,17 +24,30 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     super.dispose();
   }
 
-  Future<void> addUserToFirestore(
-    String email,
-    String userID,
-    Timestamp joinedTimestamp, // new parameter to store the join date
-  ) async {
-    await FirebaseFirestore.instance.collection('users').doc(userID).set({
-      'email': email,
-      'joinedtimestamp': joinedTimestamp, // Saving the timestamp
-      'userID': userID,
-    });
-  }
+Future<void> addUserToFirestore(
+  String email,
+  String userID,
+  Timestamp joinedTimestamp,
+  int logStreak,
+  int rewardProgress
+) async {
+  final userRef = FirebaseFirestore.instance.collection('users').doc(userID);
+  
+  // Create or update the user document with basic info
+  await userRef.set({
+    'email': email,
+    'joinedTimestamp': joinedTimestamp,
+    'logStreak': logStreak,
+    'rewardProgress': rewardProgress,
+    'userID': userID,
+
+  });
+
+  Map<String, dynamic> initialJournalEntry = {'text': 'My first entry', 'timestamp': Timestamp.now()};
+
+  await userRef.collection('journalEntries').doc('initial').set(initialJournalEntry);
+}
+
 
   Future<void> _createAccount() async {
     if (_passwordController.text != _confirmPasswordController.text) {
@@ -79,6 +92,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         _emailController.text.trim(),
         FirebaseAuth.instance.currentUser!.uid,
         joinedTimestamp,
+        0,
+        0,
       );
 
       // Display a success message

@@ -20,9 +20,10 @@ class _JournalPageState extends State<JournalPage> {
     _loadEntries();
   }
 
-  // Future<void> _signOut() async {
-  //   await FirebaseAuth.instance.signOut();
-  // }
+Future<void> _signOut() async {
+  await FirebaseAuth.instance.signOut();
+}
+
 
   Future<void> _loadEntries() async {
     final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -78,54 +79,51 @@ class _JournalPageState extends State<JournalPage> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Create an empty JournalEntry
-          final newEntry = JournalEntry(
-            id: DateTime.now()
-                .toString(), // Unique ID based on the current time
-            title: '', // Empty title
-            body: '', // Empty body
-            date: DateTime.now(), // Current date and time
-          );
-
-          // Navigate to the JournalEntryEditScreen with the new, empty entry
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => JournalEntryEditScreen(
-                entry: newEntry,
-                onSave: (JournalEntry updatedEntry) async {
-                  if (updatedEntry.title.isNotEmpty ||
-                      updatedEntry.body.isNotEmpty) {
-                    await _loadEntries(); // Refresh the list from Firestore
-                    Navigator.of(context)
-                        .pop(); // Optionally, pop the edit screen automatically
-                  }
-                },
-              ),
-            ),
-          );
-        },
-        tooltip: 'Add Entry',
-        child: const Icon(
-          Icons.add,
-          color: Colors.teal,
-        ),
-      ),
+      floatingActionButton: ElevatedButton(
+  onPressed: () async {
+    await _signOut();
+    // Optionally, navigate back to the login screen or reset the app state post-sign-out
+    Navigator.of(context).pushReplacementNamed('/login'); // Assuming '/login' is your login screen route
+  },
+  child: Text('Sign Out'),
+)
     );
   }
 }
 
 
-// Future<void> _signOut() async {
-//   await FirebaseAuth.instance.signOut();
-// }
 
-// floatingActionButton: ElevatedButton(
-//   onPressed: () async {
-//     await _signOut();
-//     // Optionally, navigate back to the login screen or reset the app state post-sign-out
-//     Navigator.of(context).pushReplacementNamed('/login'); // Assuming '/login' is your login screen route
-//   },
-//   child: Text('Sign Out'),
-// )
+// FloatingActionButton(
+//         onPressed: () {
+//           // Create an empty JournalEntry
+//           final newEntry = JournalEntry(
+//             id: DateTime.now()
+//                 .toString(), // Unique ID based on the current time
+//             title: '', // Empty title
+//             body: '', // Empty body
+//             date: DateTime.now(), // Current date and time
+//           );
+
+//           // Navigate to the JournalEntryEditScreen with the new, empty entry
+//           Navigator.of(context).push(
+//             MaterialPageRoute(
+//               builder: (context) => JournalEntryEditScreen(
+//                 entry: newEntry,
+//                 onSave: (JournalEntry updatedEntry) async {
+//                   if (updatedEntry.title.isNotEmpty ||
+//                       updatedEntry.body.isNotEmpty) {
+//                     await _loadEntries(); // Refresh the list from Firestore
+//                     Navigator.of(context)
+//                         .pop(); // Optionally, pop the edit screen automatically
+//                   }
+//                 },
+//               ),
+//             ),
+//           );
+//         },
+//         tooltip: 'Add Entry',
+//         child: const Icon(
+//           Icons.add,
+//           color: Colors.teal,
+//         ),
+//       ),
