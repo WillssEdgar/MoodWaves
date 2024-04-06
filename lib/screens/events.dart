@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+
+/// Generates the page for the Events tab of the app.
+/// 
 class EventsPage extends StatelessWidget {
 
-  /// Generates the 
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +43,12 @@ class EventsPage extends StatelessWidget {
       },
     ];
 
+    List sortedList = feedItems; // listSorter(feedItems);
+
     return Scaffold(
       body: ListView.builder(
-        itemCount: feedItems.length,
-        
+        itemCount: sortedList.length,
         itemBuilder: (context, index) {
-
-            String? eventDate = feedItems[index]['datetime'];
-
-
-
-
           return Card(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -59,21 +56,21 @@ class EventsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    feedItems[index]['title']!,
+                    sortedList[index]['title']!,
                     style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8.0),
-                  Text(feedItems[index]['content']!),
+                  Text(sortedList[index]['content']!),
                   const SizedBox(height: 8.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(feedItems[index]['author']!),
-                      Text(feedItems[index]['location']!),
-                      Text(feedItems[index]['datetime']!),
+                      Text(sortedList[index]['author']!),
+                      Text(sortedList[index]['location']!),
+                      Text(sortedList[index]['datetime']!),
                     ],
                   ),
                 ],
@@ -89,7 +86,46 @@ class EventsPage extends StatelessWidget {
 
 /// Returns a checkable time string, allowing cards with closer time 
 /// to rise to the top
- void _dateCreator(String eventDate) async {
-  DateTime currentDateTime =  DateTime.now(); 
-  String dateTimeString = currentDateTime.toString();
+ DateTime _dateCreator(String eventDate) {
+  final now = DateTime.now();
+  List<String> splittedList = eventDate.split(" ");
+  splittedList.remove("at");
+  // "April" "27" "2:30"
+
+
+    // Error: Can't convert string to months yet.
+  DateTime eventDateTime = DateTime(now.year, int.parse(splittedList[1].toLowerCase()), int.parse(splittedList[0]), int.parse(splittedList[2]));
+  return eventDateTime;
+}
+
+
+/// Takes in an unsorted list of events, and based on 
+List<dynamic> listSorter(List feedItems) {
+
+
+  final now = DateTime.now();
+  List sortedList = [];
+  
+  for (var i = 0; i <= feedItems.length; i++) {
+    sortedList.add({});
+
+    DateTime indivEventTime = _dateCreator(feedItems[i]['datetime']); 
+
+    if (indivEventTime.isBefore(now)) {
+
+      String expiredTime = (feedItems[i]["datetime"]);
+      feedItems[i]["datetime"] = ("Expired: $expiredTime");
+      sortedList.add(feedItems[i]);
+
+    } else if (indivEventTime.isAfter(now)) {
+
+      sortedList.insert(feedItems[i],0);
+
+    }
+
+
+  }
+
+  return sortedList;
+
 }
