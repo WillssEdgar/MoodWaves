@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mood_waves/classes/mood.dart';
 import 'package:mood_waves/classes/mood_info.dart';
@@ -42,7 +43,9 @@ class MyPieChart extends StatelessWidget {
         moodLog.moodlist.map((mood) => mood.moodColor).toSet().toList();
 
     if (moodCount.isEmpty || colors.isEmpty) {
-      print("Error: Mood count or colors are empty.");
+      if (kDebugMode) {
+        print("Error: Mood count or colors are empty.");
+      }
       return [];
     }
     return List.generate(
