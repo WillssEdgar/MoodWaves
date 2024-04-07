@@ -18,7 +18,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const ResourcesPage(),
-   EventsPage(),
+    const EventsPage(),
     const DashboardPage(),
     const JournalPage(),
     const RewardsPage(),

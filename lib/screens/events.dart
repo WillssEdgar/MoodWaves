@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 
 /// Generates the page for the Events tab of the app.
 /// 
 class EventsPage extends StatelessWidget {
+  const EventsPage({super.key});
+
 
 
   /// Override method stores dummy data, and 
@@ -120,7 +123,9 @@ int timeDay = int.parse(splittedList[1]);
   // "April" "27" "2:30"
  
   DateTime eventDateTime = DateTime(now.year, _getMonthIndex(timeMonth), timeDay, timeHr, timeMin);
-  print(eventDateTime);
+  if (kDebugMode) {
+    print(eventDateTime);
+  }
   return eventDateTime;
 }
 
