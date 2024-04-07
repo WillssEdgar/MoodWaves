@@ -5,17 +5,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'screens/login.dart';
 import 'firebase_options.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-
+    options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -32,13 +28,12 @@ class MyApp extends StatelessWidget {
           } else if (snapshot.hasError) {
             return const Center(child: Text('Something went wrong!'));
           } else if (snapshot.hasData) {
-            return HomeScreen(); // User is signed in
+            return const HomeScreen(); // User is signed in
           } else {
-            return LoginScreen(); // Replace with your sign-in screen
+            return const LoginScreen(); // Replace with your sign-in screen
           }
         },
       ),
     );
   }
 }
-

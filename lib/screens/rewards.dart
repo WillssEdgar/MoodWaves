@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RewardsPage extends StatefulWidget {
+  const RewardsPage({super.key});
+
   @override
   _RewardsPageState createState() => _RewardsPageState();
 }
