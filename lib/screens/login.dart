@@ -7,10 +7,10 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final _emailOrUsernameController = TextEditingController();
   final _passwordController = TextEditingController();
   CreateAccountScreen createAccountScreen = const CreateAccountScreen();
@@ -35,9 +35,12 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text.trim(),
       );
 
-      // Navigate to your app's home screen or another appropriate screen
-      // after successful login. Replace '/home' with your home route.
-      Navigator.pushReplacementNamed(context, '/home');
+      // Check if the widget is still mounted before navigating
+      if (mounted) {
+        // Navigate to your app's home screen or another appropriate screen
+        // after successful login. Replace '/home' with your home route.
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'An error occurred. Please try again.';
 
@@ -45,17 +48,23 @@ class _LoginScreenState extends State<LoginScreen> {
         errorMessage = 'Incorrect email or password.';
       }
 
-      // Show an error dialog or snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // Check if the widget is still mounted before showing the snackbar
+      if (mounted) {
+        // Show an error dialog or snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      // Only call setState if the widget is still mounted
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

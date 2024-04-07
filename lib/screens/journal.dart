@@ -8,10 +8,10 @@ class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
 
   @override
-  _JournalPageState createState() => _JournalPageState();
+  JournalPageState createState() => JournalPageState();
 }
 
-class _JournalPageState extends State<JournalPage> {
+class JournalPageState extends State<JournalPage> {
   List<JournalEntry> entries = []; // Initializes with an empty list
 
   @override
@@ -66,10 +66,17 @@ Future<void> _signOut() async {
                     builder: (context) => JournalEntryEditScreen(
                       entry: entry,
                       onSave: (JournalEntry updatedEntry) async {
+                        // Store a reference to the Navigator's state before the async gap.
+                        final navigator = Navigator.of(context);
+
                         // Refresh entries from Firestore after an update
                         await _loadEntries();
-                        Navigator.of(context)
-                            .pop(); // Optionally, pop the edit screen automatically
+
+                        // Check if the widget is still mounted before calling `pop`
+                        if (navigator.mounted) {
+                          navigator
+                              .pop(); // Optionally, pop the edit screen automatically
+                        }
                       },
                     ),
                   ),
@@ -79,6 +86,7 @@ Future<void> _signOut() async {
           },
         ),
       ),
+
       floatingActionButton: ElevatedButton(
   onPressed: () async {
     await _signOut();
@@ -87,6 +95,46 @@ Future<void> _signOut() async {
   },
   child: Text('Sign Out'),
 )
+
+      floatingActionButton: FloatingActionButton(
+  onPressed: () {
+    // Capture the context valid at the moment of button press
+    final BuildContext currentContext = context;
+
+    // Create an empty JournalEntry
+    final newEntry = JournalEntry(
+      id: DateTime.now().toString(), // Unique ID based on the current time
+      title: '', // Empty title
+      body: '', // Empty body
+      date: DateTime.now(), // Current date and time
+    );
+
+    // Navigate to the JournalEntryEditScreen with the new, empty entry
+    Navigator.of(currentContext).push(
+      MaterialPageRoute(
+        builder: (context) => JournalEntryEditScreen(
+          entry: newEntry,
+          onSave: (JournalEntry updatedEntry) async {
+            if (updatedEntry.title.isNotEmpty || updatedEntry.body.isNotEmpty) {
+              await _loadEntries(); // Refresh the list from Firestore
+
+              if (mounted) {
+                Navigator.of(currentContext).pop(); // Optionally, pop the edit screen automatically
+              }
+            }
+          },
+        ),
+      ),
+
+    );
+  },
+  tooltip: 'Add Entry',
+  child: const Icon(
+    Icons.add,
+    color: Colors.teal,
+  ),
+),
+
     );
   }
 }

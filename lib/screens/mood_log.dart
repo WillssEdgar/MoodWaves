@@ -123,6 +123,7 @@ Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
         .collection('moodEntries')
         .doc(formattedDate);
 
+
     // Get the current moodList array
     List<String> currentMoodList = [];
     bool isFirstEntryOfDay = false; // Flag to check if it's the first entry of the day
