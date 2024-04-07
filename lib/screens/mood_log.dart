@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mood_waves/classes/journal_entry_class.dart';
@@ -131,7 +132,9 @@ class _MoodLogState extends State<MoodLog> {
               (docSnapshot.data() as Map<String, dynamic>)['moodList'] ?? []);
         }
       } catch (e) {
-        print("Error getting moodList: $e");
+        if (kDebugMode) {
+          print('Error fetching moodList: $e');
+        }
       }
 
       // Add the new mood to the current moodList

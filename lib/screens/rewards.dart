@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -5,10 +6,10 @@ class RewardsPage extends StatefulWidget {
   const RewardsPage({super.key});
 
   @override
-  _RewardsPageState createState() => _RewardsPageState();
+  RewardsPageState createState() => RewardsPageState();
 }
 
-class _RewardsPageState extends State<RewardsPage> {
+class RewardsPageState extends State<RewardsPage> {
   // final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final double progress =
       100; // Change this value to test the button's behavior
@@ -99,7 +100,9 @@ class _RewardsPageState extends State<RewardsPage> {
                         ranks[index] += 1;
                       });
                       // firestore.collection('rewards').doc('user1').update({ 'rank': ranks[index]});
-                      print('Reward collected for Rank ${ranks[index]}!');
+                      if (kDebugMode) {
+                        print('Reward collected for Rank ${ranks[index]}!');
+                      }
                     }
                   : null,
               style: ButtonStyle(

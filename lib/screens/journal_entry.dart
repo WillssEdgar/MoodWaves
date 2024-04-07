@@ -13,10 +13,10 @@ class JournalEntryEditScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  _JournalEntryEditScreenState createState() => _JournalEntryEditScreenState();
+  JournalEntryEditScreenState createState() => JournalEntryEditScreenState();
 }
 
-class _JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
+class JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
   late TextEditingController _titleController;
   late TextEditingController _bodyController;
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -44,12 +44,12 @@ class _JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
           _bodyController.text != widget.entry.body) {
         // Update the entry with the new values
         JournalEntry updatedEntry = JournalEntry(
-          id: widget.entry
-              .id, // Assuming id is still relevant for identifying the entry within the subcollection
+          id: widget.entry.id, // Assuming id is still relevant
           title: _titleController.text,
           body: _bodyController.text,
           date: widget.entry.date,
         );
+
         showDialog(
           context: context,
           barrierDismissible: false, // User must wait.
@@ -65,6 +65,7 @@ class _JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
             );
           },
         );
+
         // Create an instance of the Firestore service
         final firestore = FirebaseFirestore.instance;
 
@@ -72,37 +73,35 @@ class _JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
         DocumentReference userDocRef =
             firestore.collection('users').doc(userId);
 
-        // Save the updated entry to Firestore under the user's subcollection
-        await userDocRef
-            .collection('journalEntries')
-            .doc(updatedEntry.id)
-            .set(updatedEntry.toJson(), SetOptions(merge: true))
-            .then((_) {
-          print("Journal entry updated successfully.");
-          print(updatedEntry
-              .toJson()); // Check the format of 'date' before saving
+        try {
+          await userDocRef
+              .collection('journalEntries')
+              .doc(updatedEntry.id)
+              .set(updatedEntry.toJson(), SetOptions(merge: true));
 
-          // Show a success message using a SnackBar
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Journal entry updated successfully!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }).catchError((error) {
-          print("Failed to update journal entry: $error");
-          // Show an error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to update journal entry.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        });
-
-        Navigator.pop(context); // Close the saving dialog
-
-        Navigator.of(context).pop(); // Exit the screen after saving
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Journal entry updated successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } catch (error) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Failed to update journal entry.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        } finally {
+          if (mounted) {
+            Navigator.pop(context); // Close the saving dialog
+            Navigator.of(context).pop(); // Exit the screen after saving
+          }
+        }
       }
     } else {
       // Handle the case where no user is signed in, if needed
