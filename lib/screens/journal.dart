@@ -95,6 +95,15 @@ class JournalPageState extends State<JournalPage> {
 //   child: Text('Sign Out'),
 // )
 
+      // floatingActionButton: ElevatedButton(
+      //   onPressed: () async {
+      //     await _signOut();
+      //     // Optionally, navigate back to the login screen or reset the app state post-sign-out
+      //     Navigator.of(context).pushReplacementNamed(
+      //         '/login'); // Assuming '/login' is your login screen route
+      //   },
+      //   child: const Text('Sign Out'),
+      // ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Capture the context valid at the moment of button press

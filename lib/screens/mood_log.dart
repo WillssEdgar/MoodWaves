@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mood_waves/classes/journal_entry_class.dart';
+
 import 'package:mood_waves/widgets/pie_chart.dart';
 import 'package:mood_waves/classes/mood.dart';
 import 'package:mood_waves/classes/mood_info.dart';
@@ -113,78 +114,76 @@ class _MoodLogState extends State<MoodLog> {
   }
 
   /// Adds mood entries for the selected day.
-Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
-  if (userId.isNotEmpty) {
-    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
-    // Reference to the document in moodEntries collection
-    DocumentReference moodEntryDocRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('moodEntries')
-        .doc(formattedDate);
+  Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
+    if (userId.isNotEmpty) {
+      String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
+      // Reference to the document in moodEntries collection
+      DocumentReference moodEntryDocRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('moodEntries')
+          .doc(formattedDate);
 
-
-    // Get the current moodList array
-    List<String> currentMoodList = [];
-    bool isFirstEntryOfDay = false; // Flag to check if it's the first entry of the day
-    try {
-      DocumentSnapshot docSnapshot = await moodEntryDocRef.get();
-      if (docSnapshot.exists) {
-        currentMoodList = List<String>.from(
-            (docSnapshot.data() as Map<String, dynamic>)['moodList'] ?? []);
+      // Get the current moodList array
+      List<String> currentMoodList = [];
+      bool isFirstEntryOfDay =
+          false; // Flag to check if it's the first entry of the day
+      try {
+        DocumentSnapshot docSnapshot = await moodEntryDocRef.get();
+        if (docSnapshot.exists) {
+          currentMoodList = List<String>.from(
+              (docSnapshot.data() as Map<String, dynamic>)['moodList'] ?? []);
+        }
+        // If the moodList is empty, it's the first entry of the day
+        isFirstEntryOfDay = currentMoodList.isEmpty;
+      } catch (e) {
+        print("Error getting moodList: $e");
       }
-      // If the moodList is empty, it's the first entry of the day
-      isFirstEntryOfDay = currentMoodList.isEmpty;
-    } catch (e) {
-      print("Error getting moodList: $e");
-    }
 
-    // Add the new mood to the current moodList
-    currentMoodList.add(moodName);
+      // Add the new mood to the current moodList
+      currentMoodList.add(moodName);
 
-    // Update the moodList field in Firestore
-    await moodEntryDocRef.set({
-      'id': formattedDate,
-      'moodList': currentMoodList,
-    }, SetOptions(merge: true));
+      // Update the moodList field in Firestore
+      await moodEntryDocRef.set({
+        'id': formattedDate,
+        'moodList': currentMoodList,
+      }, SetOptions(merge: true));
 
-    if (isFirstEntryOfDay) {
-      // Only update logStreak and rewardProgress if it's the first entry of the day
-      DocumentReference userDocRef =
-          FirebaseFirestore.instance.collection('users').doc(userId);
+      if (isFirstEntryOfDay) {
+        // Only update logStreak and rewardProgress if it's the first entry of the day
+        DocumentReference userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(userId);
 
-      FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(userDocRef);
-        if (!snapshot.exists) {
-          throw Exception("User does not exist!");
-        }
-        int currentStreak =
-            (snapshot.data() as Map<String, dynamic>)['logStreak'] ?? 0;
-        int currentRewardProgress =
-            (snapshot.data() as Map<String, dynamic>)['rewardProgress'] ?? 0;
+        FirebaseFirestore.instance.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(userDocRef);
+          if (!snapshot.exists) {
+            throw Exception("User does not exist!");
+          }
+          int currentStreak =
+              (snapshot.data() as Map<String, dynamic>)['logStreak'] ?? 0;
+          int currentRewardProgress =
+              (snapshot.data() as Map<String, dynamic>)['rewardProgress'] ?? 0;
 
-        // Updating both logStreak and rewardProgress in the same transaction
-        transaction.update(userDocRef, {
-          'logStreak': currentStreak + 1,
-          'rewardProgress': currentRewardProgress + 10
+          // Updating both logStreak and rewardProgress in the same transaction
+          transaction.update(userDocRef, {
+            'logStreak': currentStreak + 1,
+            'rewardProgress': currentRewardProgress + 10
+          });
+        }).then((result) {
+          if (kDebugMode) {
+            print("logStreak and rewardProgress updated successfully.");
+          }
+        }).catchError((error) {
+          if (kDebugMode) {
+            print("Failed to update logStreak and rewardProgress: $error");
+          }
         });
-      }).then((result) {
-        if (kDebugMode) {
-          print("logStreak and rewardProgress updated successfully.");
-        }
-      }).catchError((error) {
-        if (kDebugMode) {
-          print("Failed to update logStreak and rewardProgress: $error");
-        }
-      });
+      }
+
+      // Fetch updated mood entry
+      _fetchMoodEntry(selectedDay);
     }
-
-    // Fetch updated mood entry
-    _fetchMoodEntry(selectedDay);
   }
-}
-
-
 
   /// Updates the variable today and updates the journal entries and graph
   void _onDaySelected(DateTime day, DateTime focusedDay) {
@@ -242,13 +241,11 @@ Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Center(
-                    child: Expanded(
-                      child: SizedBox(
-                        height: 200,
-                        width: 200,
-                        child: MyPieChart(moodLog: moodInfo),
-                      ),
+                  Expanded(
+                    child: SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: MyPieChart(moodLog: moodInfo),
                     ),
                   ),
                   const SizedBox(width: 15),
