@@ -6,10 +6,10 @@ class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
 
   @override
-  _CreateAccountScreenState createState() => _CreateAccountScreenState();
+  CreateAccountScreenState createState() => CreateAccountScreenState();
 }
 
-class _CreateAccountScreenState extends State<CreateAccountScreen> {
+class CreateAccountScreenState extends State<CreateAccountScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -24,17 +24,30 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     super.dispose();
   }
 
-  Future<void> addUserToFirestore(
-    String email,
-    String userID,
-    Timestamp joinedTimestamp, // new parameter to store the join date
-  ) async {
-    await FirebaseFirestore.instance.collection('users').doc(userID).set({
-      'email': email,
-      'joinedtimestamp': joinedTimestamp, // Saving the timestamp
-      'userID': userID,
-    });
-  }
+Future<void> addUserToFirestore(
+  String email,
+  String userID,
+  Timestamp joinedTimestamp,
+  int logStreak,
+  int rewardProgress
+) async {
+  final userRef = FirebaseFirestore.instance.collection('users').doc(userID);
+  
+  // Create or update the user document with basic info
+  await userRef.set({
+    'email': email,
+    'joinedTimestamp': joinedTimestamp,
+    'logStreak': logStreak,
+    'rewardProgress': rewardProgress,
+    'userID': userID,
+
+  });
+
+  Map<String, dynamic> initialJournalEntry = {'text': 'My first entry', 'timestamp': Timestamp.now()};
+
+  await userRef.collection('journalEntries').doc('initial').set(initialJournalEntry);
+}
+
 
   Future<void> _createAccount() async {
     if (_passwordController.text != _confirmPasswordController.text) {
@@ -71,14 +84,16 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
       Timestamp joinedTimestamp = Timestamp.now();
 
-      // Navigate to your app's home screen or display a success message
-      // Navigator.pushReplacementNamed(context, '/home');
-      print('User created successfully.');
+      // Make sure widget is still mounted before navigating or showing a snackbar
+      if (!mounted) return;
 
+      // Navigator.pushReplacementNamed(context, '/home');
       addUserToFirestore(
         _emailController.text.trim(),
         FirebaseAuth.instance.currentUser!.uid,
         joinedTimestamp,
+        0,
+        0,
       );
 
       // Display a success message
@@ -89,8 +104,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         ),
       );
     } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
       // Handle errors, such as email already in use, weak password, etc.
-      print(e.message);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.message ?? 'An error occurred. Please try again.'),
@@ -98,9 +114,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         ),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
