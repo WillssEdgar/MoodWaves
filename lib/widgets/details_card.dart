@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mood_waves/data/card_details.dart';
 import 'package:mood_waves/widgets/custom_card_widget.dart';
 
+/// The DetailsCard widget displays a grid of cards containing details about the user's wellness.
+/// The data for the cards is fetched from the CardDetails class.
+/// Each card contains an icon, a title, and a value.
 class DetailsCard extends StatelessWidget {
   const DetailsCard({super.key});
 
+  /// Builds the DetailsCard widget.
   @override
   Widget build(BuildContext context) {
     final studentDetails = CardDetails();

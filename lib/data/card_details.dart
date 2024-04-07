@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mood_waves/model/card_model.dart';
 
+/// The CardDetails class contains the cardData list that contains the data for the cards displayed on the dashboard.
 class CardDetails {
   final cardData = const [
     CardModel(
