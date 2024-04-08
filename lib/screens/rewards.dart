@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RewardsPage extends StatefulWidget {
@@ -23,10 +24,14 @@ class RewardsPageState extends State<RewardsPage> {
   }
 
   void _fetchRewardProgress() async {
-    DocumentSnapshot snapshot = await firestore.collection('users').doc(userId).get();
+    DocumentSnapshot snapshot =
+        await firestore.collection('users').doc(userId).get();
     if (snapshot.exists) {
       setState(() {
-        rewardProgress = (snapshot.data() as Map<String, dynamic>)['rewardProgress']?.toDouble() ?? 0;
+        rewardProgress =
+            (snapshot.data() as Map<String, dynamic>)['rewardProgress']
+                    ?.toDouble() ??
+                0;
       });
     }
   }
@@ -62,7 +67,8 @@ class RewardsPageState extends State<RewardsPage> {
               onPressed: isButtonReady ? collectReward : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: isButtonReady ? Colors.green : Colors.grey,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 textStyle: const TextStyle(fontSize: 18),
               ),
             ),

@@ -141,41 +141,43 @@ class EventsPage extends StatelessWidget {
 
     List sortedList = listSorter(feedItems);
 
-
-  return Scaffold(
-    body: ListView.builder(
-      itemCount: sortedList.length,
-      itemBuilder: (context, index) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  sortedList[index]['title']!,
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
+    return Scaffold(
+      body: ListView.builder(
+        itemCount: sortedList.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    sortedList[index]['title']!,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8.0),
-                Text(sortedList[index]['content']!),
-                const SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(flex: 2, child: Text(sortedList[index]['author']!)),
-                    Flexible(flex: 2, child: Text(sortedList[index]['location']!)),
-                    Flexible(flex: 3, child: Text(sortedList[index]['datetime']!)),
-                  ],
-                ),
-              ],
+                  const SizedBox(height: 8.0),
+                  Text(sortedList[index]['content']!),
+                  const SizedBox(height: 8.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Flexible(
+                          flex: 2, child: Text(sortedList[index]['author']!)),
+                      Flexible(
+                          flex: 2, child: Text(sortedList[index]['location']!)),
+                      Flexible(
+                          flex: 3, child: Text(sortedList[index]['datetime']!)),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    ),
-  );
-}
+          );
+        },
+      ),
+    );
+  }
 }
