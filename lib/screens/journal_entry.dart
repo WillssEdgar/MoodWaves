@@ -146,8 +146,8 @@ class JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
     // Use theme data for consistent styling
     final theme = Theme.of(context);
 
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      onPopInvoked: (bool didPop) => _onWillPop(),
       child: Scaffold(
         appBar: AppBar(
           title: Text('Edit Entry', style: theme.textTheme.titleLarge),

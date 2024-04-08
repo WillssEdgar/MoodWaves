@@ -20,10 +20,9 @@ class JournalPageState extends State<JournalPage> {
     _loadEntries();
   }
 
-Future<void> _signOut() async {
-  await FirebaseAuth.instance.signOut();
-}
-
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
+  }
 
   Future<void> _loadEntries() async {
     final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -86,51 +85,55 @@ Future<void> _signOut() async {
           },
         ),
       ),
+      floatingActionButton: Column(
+        mainAxisAlignment:
+            MainAxisAlignment.end, // Align at the end of the screen
+        children: [
+          FloatingActionButton(
+            heroTag: 'sign_out_fab',
+            onPressed: () async {
+              await _signOut();
 
-floatingActionButton: Column(
-  mainAxisAlignment: MainAxisAlignment.end, // Align at the end of the screen
-  children: [
-    FloatingActionButton(
-      onPressed: () async {
-        await _signOut();
-        Navigator.of(context).pushReplacementNamed('/login'); // Assuming '/login' is your login screen route
-      }, // Icon for sign out
-      backgroundColor: Colors.red,
-      child: const Icon(Icons.exit_to_app), // Red color for emphasis on sign out
-    ),
-    const SizedBox(height: 16), // Space between buttons
-    FloatingActionButton(
-      onPressed: () {
-        final BuildContext currentContext = context;
-        final newEntry = JournalEntry(
-          id: DateTime.now().toString(),
-          title: '',
-          body: '',
-          date: DateTime.now(),
-        );
-        Navigator.of(currentContext).push(
-          MaterialPageRoute(
-            builder: (context) => JournalEntryEditScreen(
-              entry: newEntry,
-              onSave: (JournalEntry updatedEntry) async {
-                if (updatedEntry.title.isNotEmpty || updatedEntry.body.isNotEmpty) {
-                  await _loadEntries();
-                  if (mounted) {
-                    Navigator.of(currentContext).pop();
-                  }
-                }
-              },
-            ),
+              Navigator.of(context).pushReplacementNamed(
+                  '/login'); // Assuming '/login' is your login screen route
+            }, // Icon for sign out
+            backgroundColor: Colors.red,
+            child: const Icon(
+                Icons.exit_to_app), // Red color for emphasis on sign out
           ),
-        );
-      },
-      tooltip: 'Add Entry',
-      child: const Icon(Icons.add),
-    ),
-  ],
-),
-
-
+          const SizedBox(height: 16), // Space between buttons
+          FloatingActionButton(
+            heroTag: 'add_entry_fab',
+            onPressed: () {
+              final BuildContext currentContext = context;
+              final newEntry = JournalEntry(
+                id: DateTime.now().toString(),
+                title: '',
+                body: '',
+                date: DateTime.now(),
+              );
+              Navigator.of(currentContext).push(
+                MaterialPageRoute(
+                  builder: (context) => JournalEntryEditScreen(
+                    entry: newEntry,
+                    onSave: (JournalEntry updatedEntry) async {
+                      if (updatedEntry.title.isNotEmpty ||
+                          updatedEntry.body.isNotEmpty) {
+                        await _loadEntries();
+                        if (mounted) {
+                          Navigator.of(currentContext).pop();
+                        }
+                      }
+                    },
+                  ),
+                ),
+              );
+            },
+            tooltip: 'Add Entry',
+            child: const Icon(Icons.add),
+          ),
+        ],
+      ),
     );
   }
 }
