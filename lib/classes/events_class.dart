@@ -1,3 +1,6 @@
+/// Creates a event object for every event
+/// 
+/// Is meant to scan WaveLink for events
 class MentalHealthEvent {
   String name;
   DateTime date;
