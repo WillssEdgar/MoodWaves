@@ -107,13 +107,21 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         ),
         // Then the MyPieChart widget
         if (moodInfo.moodlist.isNotEmpty) ...[
-          SizedBox(
-            height: 200, // Adjust the size as needed
-            width: screenSize.width, // Make the chart take full width
-            child: MyPieChart(
-              moodLog: moodInfo,
-              type: 'moodlog',
-            ),
+          Row(
+            children: [
+              SizedBox(
+                height: 200,
+                width: 200,
+                child: MyPieChart(
+                  moodLog: moodInfo,
+                  type: 'moodlog',
+                ),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: buildLegend(moodInfo),
+              )
+            ],
           ),
         ] else ...[
           const Center(
