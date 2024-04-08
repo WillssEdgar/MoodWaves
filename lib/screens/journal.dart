@@ -85,64 +85,51 @@ class JournalPageState extends State<JournalPage> {
           },
         ),
       ),
-
-//       floatingActionButton: ElevatedButton(
-//   onPressed: () async {
-//     await _signOut();
-//     // Optionally, navigate back to the login screen or reset the app state post-sign-out
-//     Navigator.of(context).pushReplacementNamed('/login'); // Assuming '/login' is your login screen route
-//   },
-//   child: Text('Sign Out'),
-// )
-
-      // floatingActionButton: ElevatedButton(
-      //   onPressed: () async {
-      //     await _signOut();
-      //     // Optionally, navigate back to the login screen or reset the app state post-sign-out
-      //     Navigator.of(context).pushReplacementNamed(
-      //         '/login'); // Assuming '/login' is your login screen route
-      //   },
-      //   child: const Text('Sign Out'),
-      // ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Capture the context valid at the moment of button press
-          final BuildContext currentContext = context;
-
-          // Create an empty JournalEntry
-          final newEntry = JournalEntry(
-            id: DateTime.now()
-                .toString(), // Unique ID based on the current time
-            title: '', // Empty title
-            body: '', // Empty body
-            date: DateTime.now(), // Current date and time
-          );
-
-          // Navigate to the JournalEntryEditScreen with the new, empty entry
-          Navigator.of(currentContext).push(
-            MaterialPageRoute(
-              builder: (context) => JournalEntryEditScreen(
-                entry: newEntry,
-                onSave: (JournalEntry updatedEntry) async {
-                  if (updatedEntry.title.isNotEmpty ||
-                      updatedEntry.body.isNotEmpty) {
-                    await _loadEntries(); // Refresh the list from Firestore
-
-                    if (mounted) {
-                      Navigator.of(currentContext)
-                          .pop(); // Optionally, pop the edit screen automatically
-                    }
-                  }
-                },
-              ),
-            ),
-          );
-        },
-        tooltip: 'Add Entry',
-        child: const Icon(
-          Icons.add,
-          color: Colors.teal,
-        ),
+      floatingActionButton: Column(
+        mainAxisAlignment:
+            MainAxisAlignment.end, // Align at the end of the screen
+        children: [
+          FloatingActionButton(
+            onPressed: () async {
+              await _signOut();
+              Navigator.of(context).pushReplacementNamed(
+                  '/login'); // Assuming '/login' is your login screen route
+            }, // Icon for sign out
+            backgroundColor: Colors.red,
+            child: const Icon(
+                Icons.exit_to_app), // Red color for emphasis on sign out
+          ),
+          const SizedBox(height: 16), // Space between buttons
+          FloatingActionButton(
+            onPressed: () {
+              final BuildContext currentContext = context;
+              final newEntry = JournalEntry(
+                id: DateTime.now().toString(),
+                title: '',
+                body: '',
+                date: DateTime.now(),
+              );
+              Navigator.of(currentContext).push(
+                MaterialPageRoute(
+                  builder: (context) => JournalEntryEditScreen(
+                    entry: newEntry,
+                    onSave: (JournalEntry updatedEntry) async {
+                      if (updatedEntry.title.isNotEmpty ||
+                          updatedEntry.body.isNotEmpty) {
+                        await _loadEntries();
+                        if (mounted) {
+                          Navigator.of(currentContext).pop();
+                        }
+                      }
+                    },
+                  ),
+                ),
+              );
+            },
+            tooltip: 'Add Entry',
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }
