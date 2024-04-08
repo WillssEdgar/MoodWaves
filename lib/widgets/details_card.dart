@@ -157,23 +157,20 @@ class _DetailsCardState extends State<DetailsCard> {
   }
 }
 
-int longestConsecutiveStreak(List<DateTime> dates) {
+int streakOfDates(List<DateTime> dates) {
   final datesSet = dates.toSet();
 
-  int longestStreak = 0;
   int currentStreak = 1;
 
   for (final date in datesSet) {
-    if (datesSet.contains(date.add(const Duration(days: 1)))) {
+    if (datesSet.contains(date.subtract(const Duration(days: 1)))) {
       currentStreak++;
     } else {
-      longestStreak =
-          longestStreak > currentStreak ? longestStreak : currentStreak;
-      currentStreak = 1;
+      return currentStreak;
     }
   }
 
-  return longestStreak;
+  return currentStreak;
 }
 
 // Function to fetch dates for a particular person and calculate the streak
@@ -190,7 +187,7 @@ Future<int> calculateStreakForPerson(String userId) async {
       querySnapshot.docs.map((doc) => dateFormat.parse(doc['id'])).toList();
 
   dates.sort((b, a) => a.compareTo(b));
-  final streak = longestConsecutiveStreak(dates);
+  final streak = streakOfDates(dates);
 
   return streak;
 }
