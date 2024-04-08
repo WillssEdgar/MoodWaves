@@ -29,8 +29,6 @@ class CardDetails {
           icon: Icons.local_fire_department,
           value: consecutiveDays,
           title: "Log Streak:"),
-      CardModel(
-          icon: Icons.mood, value: "Happy", title: "Mood:", widget: pieChart),
     ];
   }
 }
