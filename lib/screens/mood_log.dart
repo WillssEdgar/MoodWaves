@@ -136,7 +136,9 @@ Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
       // If the moodList is empty, it's the first entry of the day
       isFirstEntryOfDay = currentMoodList.isEmpty;
     } catch (e) {
-      print("Error getting moodList: $e");
+      if (kDebugMode) {
+        print("Error getting moodList: $e");
+      }
     }
 
     // Add the new mood to the current moodList
