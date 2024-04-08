@@ -137,7 +137,7 @@ class _MoodLogState extends State<MoodLog> {
         // If the moodList is empty, it's the first entry of the day
         isFirstEntryOfDay = currentMoodList.isEmpty;
       } catch (e) {
-        print("Error getting moodList: $e");
+        //print("Error getting moodList: $e");
       }
 
       // Add the new mood to the current moodList
@@ -245,7 +245,10 @@ class _MoodLogState extends State<MoodLog> {
                     child: SizedBox(
                       height: 200,
                       width: 200,
-                      child: MyPieChart(moodLog: moodInfo),
+                      child: MyPieChart(
+                        moodLog: moodInfo,
+                        type: "moodlog",
+                      ),
                     ),
                   ),
                   const SizedBox(width: 15),

@@ -9,7 +9,11 @@ class CardModel {
   final IconData icon;
   final String value;
   final String title;
+  Widget? widget;
 
-  const CardModel(
-      {required this.icon, required this.value, required this.title});
+  CardModel(
+      {required this.icon,
+      required this.value,
+      required this.title,
+      this.widget});
 }

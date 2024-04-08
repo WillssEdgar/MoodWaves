@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mood_waves/widgets/details_card.dart';
 import 'package:mood_waves/classes/mood_info.dart';
 import 'package:mood_waves/classes/mood.dart';
-import 'package:mood_waves/widgets/pie_chart.dart';
+//import 'package:mood_waves/widgets/pie_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -100,23 +100,27 @@ class _DashboardWidgetState extends State<DashboardWidget> {
 
     return ListView(
       children: [
-        // Place the DetailsCard widget first
-        SizedBox(
-          height: screenSize.height * 0.5,
-          child: const DetailsCard(),
-        ),
+        Column(
+          children: [
+            // Place the DetailsCard widget first
+            SizedBox(
+              height: screenSize.height * 1,
+              child: const DetailsCard(),
+            ),
+          ],
+        )
         // Then the MyPieChart widget
-        if (moodInfo.moodlist.isNotEmpty) ...[
-          SizedBox(
-            height: 200, // Adjust the size as needed
-            width: screenSize.width, // Make the chart take full width
-            child: MyPieChart(moodLog: moodInfo),
-          ),
-        ] else ...[
-          const Center(
-            child: Text("No mood data available"),
-          ),
-        ],
+        // if (moodInfo.moodlist.isNotEmpty) ...[
+        //   SizedBox(
+        //     height: 200, // Adjust the size as needed
+        //     width: screenSize.width, // Make the chart take full width
+        //     child: MyPieChart(moodLog: moodInfo),
+        //   ),
+        // ] else ...[
+        //   const Center(
+        //     child: Text("No mood data available"),
+        //   ),
+        // ],
       ],
     );
   }
