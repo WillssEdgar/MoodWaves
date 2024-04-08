@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mood_waves/classes/resource_class.dart';
+import '/classes/resource_class.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ResourcesPage extends StatefulWidget {
