@@ -90,10 +90,8 @@ class JournalPageState extends State<JournalPage> {
             MainAxisAlignment.end, // Align at the end of the screen
         children: [
           FloatingActionButton(
-            heroTag: 'sign_out_fab',
             onPressed: () async {
               await _signOut();
-
               Navigator.of(context).pushReplacementNamed(
                   '/login'); // Assuming '/login' is your login screen route
             }, // Icon for sign out
@@ -103,7 +101,6 @@ class JournalPageState extends State<JournalPage> {
           ),
           const SizedBox(height: 16), // Space between buttons
           FloatingActionButton(
-            heroTag: 'add_entry_fab',
             onPressed: () {
               final BuildContext currentContext = context;
               final newEntry = JournalEntry(

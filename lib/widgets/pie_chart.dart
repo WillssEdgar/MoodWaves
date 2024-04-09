@@ -7,26 +7,40 @@ import 'package:mood_waves/classes/mood_info.dart';
 // A pie chart widget that displays mood distribution based on the provided mood log.
 class MyPieChart extends StatelessWidget {
   final MoodInfo moodLog;
-  const MyPieChart({required this.moodLog, Key? key}) : super(key: key);
+  final String type;
+  const MyPieChart({required this.moodLog, required this.type, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    double centerSpaceRadius = 50;
+    double sectionsSpace = 5;
+    double radius = 45;
+
+    if (type == "dashboard") {
+      centerSpaceRadius = 10;
+      sectionsSpace = 2;
+      radius = 20;
+    }
+
     return Center(
       child: PieChart(
         PieChartData(
-          sections: _generateSections(),
+          sections: _generateSections(radius),
           borderData: FlBorderData(
             show: false,
           ),
-          centerSpaceRadius: 50,
-          sectionsSpace: 5,
+          // centerSpaceRadius: 50,
+
+          centerSpaceRadius: centerSpaceRadius,
+          sectionsSpace: sectionsSpace,
         ),
       ),
     );
   }
 
   // Generates the sections for the pie chart based on mood distrubtion.
-  List<PieChartSectionData> _generateSections() {
+  List<PieChartSectionData> _generateSections(double radius) {
     List<Mood> moods = moodLog.moodlist;
     Map<String?, int> moodCount = {};
 
@@ -56,8 +70,11 @@ class MyPieChart extends StatelessWidget {
         return PieChartSectionData(
           color: colors[index],
           value: moodCount.values.elementAt(index).toDouble(),
-          title: '${percentage.toStringAsFixed(1)}%',
-          radius: 45,
+
+          title: type == "moodlog" ? '${percentage.toStringAsFixed(1)}%' : null,
+          showTitle: type == "moodlog" ? true : false,
+          //radius: 45,
+          radius: radius,
           titleStyle: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
