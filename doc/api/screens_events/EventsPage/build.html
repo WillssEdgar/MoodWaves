@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the build method from the EventsPage class, for the Dart programming language.">
+  <title>build method - EventsPage class - events library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">mood_waves</a></li>
+    <li><a href="../../screens_events/screens_events-library.html">screens&#47;events.dart</a></li>
+    <li><a href="../../screens_events/EventsPage-class.html">EventsPage</a></li>
+    <li class="self-crumb">build method</li>
+  </ol>
+  <div class="self-name">build</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        brightness_4
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        brightness_5
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="screens_events&#47;EventsPage-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">build</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+
+<span class="returntype"><a href="https://api.flutter.dev/flutter/widgets/Widget-class.html">Widget</a></span>
+<span class="name ">build</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="build-param-context"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/widgets/BuildContext-class.html">BuildContext</a></span> <span class="parameter-name">context</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">override</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Override method stores dummy data, and</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+Widget build(BuildContext context) {
+  &#47;&#47; Dummy data for feed items
+  final List&lt;Map&lt;String, String&gt;&gt; feedItems = [
+    {
+      &#39;title&#39;: &quot;What to do with Expired Goods&quot;,
+      &#39;content&#39;: &quot;One great calming activity is to restock old cans!&quot;,
+      &#39;author&#39;: &quot;UNCW Sustainability&quot;,
+      &#39;datetime&#39;: &quot;February 21 at 2:00PM&quot;,
+      &#39;location&#39;: &quot;Fisher Student Center&quot;,
+    },
+    {
+      &#39;title&#39;: &quot;Fire at Seahawk village&quot;,
+      &#39;content&#39;: &quot;Celebrate at the pool, and eat s&#39;mores at the campfire!&quot;,
+      &#39;author&#39;: &quot;Campus Housing&quot;,
+      &#39;datetime&#39;: &quot;April 24 at 5:30PM&quot;,
+      &#39;location&#39;: &quot;Seahawk Village&quot;,
+    },
+    {
+      &#39;title&#39;: &quot;Spa Day&quot;,
+      &#39;content&#39;: &quot;Take some time to treat yourself!&quot;,
+      &#39;author&#39;: &quot;Seahawk Wellness&quot;,
+      &#39;datetime&#39;: &quot;April 26 at 2:30PM&quot;,
+      &#39;location&#39;: &quot;Leonard Student Recreational Center&quot;,
+    },
+    {
+      &#39;title&#39;: &quot;Yoga on the Beach&quot;,
+      &#39;content&#39;:
+          &quot;Come join us this morning on the seaside for a calming experience!&quot;,
+      &#39;author&#39;: &quot;UNCW Yoga Association&quot;,
+      &#39;datetime&#39;: &quot;April 27 at 8:00AM&quot;,
+      &#39;location&#39;: &quot;Wrightsville Beach&quot;,
+    },
+    {
+      &#39;title&#39;: &quot;Handpan Music Festival&quot;,
+      &#39;content&#39;:
+          &quot;Listen to the soothing ringing of these bell-like instruments!&quot;,
+      &#39;author&#39;: &quot;Blue Mountain Group&quot;,
+      &#39;datetime&#39;: &quot;April 28 at 12:30PM&quot;,
+      &#39;location&#39;: &quot;Fisher Student Center&quot;,
+    }
+  ];
+
+  List sortedList = listSorter(feedItems);
+
+  return Scaffold(
+    body: ListView.builder(
+      itemCount: sortedList.length,
+      itemBuilder: (context, index) {
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: &lt;Widget&gt;[
+                Text(
+                  sortedList[index][&#39;title&#39;]!,
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                Text(sortedList[index][&#39;content&#39;]!),
+                const SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: &lt;Widget&gt;[
+                    Flexible(
+                        flex: 2, child: Text(sortedList[index][&#39;author&#39;]!)),
+                    Flexible(
+                        flex: 2, child: Text(sortedList[index][&#39;location&#39;]!)),
+                    Flexible(
+                        flex: 3, child: Text(sortedList[index][&#39;datetime&#39;]!)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">mood_waves</a></li>
+    <li><a href="../../screens_events/screens_events-library.html">events</a></li>
+    <li><a href="../../screens_events/EventsPage-class.html">EventsPage</a></li>
+    <li class="self-crumb">build method</li>
+</ol>
+
+
+    <h5>EventsPage class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    mood_waves
+      0.1.0
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+
