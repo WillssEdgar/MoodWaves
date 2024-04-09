@@ -1,3 +1,6 @@
+/// Defines a resource for the resources page, contains the variables inside
+/// 
+/// Returns a resource object/widget
 class Resource {
   // for students find help in the real world
 
@@ -40,29 +43,3 @@ var sampleLists = [
       resourceDesc: "Schedule appointments with helpful staff",
       resourceURL: "https://uncw.edu/seahawk-life/health-wellness/counseling/")
 ];
-
-
-
-
-
-// class NavTab extends StatelessWidget {
-//   const NavTab({super.key});
-
-// @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Navigation'),
-//       ),
-//       body: Center(
-//         child: ElevatedButton(
-//           child: const Text('Rewards'),
-//           onPressed: () {
-//             // Click here for reward!
-//           },
-//         )
-//       )
-//     );
-//  // added a nav tab for future linking to other parts of the page
-//   }
-// }

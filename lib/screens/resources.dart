@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '/classes/resource_class.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+
+/// Creates a page for the Resources on the app
+///
+/// Returns a functioning page
 class ResourcesPage extends StatefulWidget {
   const ResourcesPage({super.key});
 
@@ -9,12 +13,20 @@ class ResourcesPage extends StatefulWidget {
   State<ResourcesPage> createState() => _ResourcePageState();
 }
 
+
+/// Alters the state of the [ResourcesPage] based on input
+/// 
+/// 
 class _ResourcePageState extends State<ResourcesPage>
     implements SearchBarChangeListener {
   _ResourcePageState();
   List<Resource> resources = sampleLists;
 
   @override
+
+  /// Whenever searchbar is changed, sort the list, comparing each member
+  /// 
+  /// Changes the resources value, swapping locations
   void onSearchbarChanged(String searchbarVal) {
     // implement onSearchbarChanged
     resources.sort((b, a) => // Swapping a and b made list work!
@@ -49,6 +61,10 @@ class _ResourcePageState extends State<ResourcesPage>
   }
 }
 
+
+/// Creates a stateful widget, creating a search bar
+/// 
+/// Returns a functioning searchbar
 class RescSearchBar extends StatefulWidget {
   // Allows search bar to manipulate the list.
   final SearchBarChangeListener listener;
@@ -58,6 +74,8 @@ class RescSearchBar extends StatefulWidget {
   State<RescSearchBar> createState() => _RescSearchBarState();
 }
 
+
+/// Handles changes to the state of the search bar
 class _RescSearchBarState extends State<RescSearchBar> {
   @override
   Widget build(BuildContext context) {
@@ -75,6 +93,8 @@ class _RescSearchBarState extends State<RescSearchBar> {
   }
 }
 
+
+///
 class DynamicLister extends StatefulWidget {
   const DynamicLister({super.key, required this.resources});
   final List<Resource> resources;
@@ -83,6 +103,7 @@ class DynamicLister extends StatefulWidget {
   State<DynamicLister> createState() => _DynamicListerState();
 }
 
+/// Creates each item in the list, every time it is changed
 class _DynamicListerState extends State<DynamicLister> {
   @override
   Widget build(BuildContext context) {
@@ -137,7 +158,7 @@ Future<void> _launchURL(String url) async { // based on ChatGPT, launches the UR
     }
   }
 
-
+/// Listener class that indicates the searchBar value has changed
 abstract class SearchBarChangeListener {
   void onSearchbarChanged(String value);
 }
