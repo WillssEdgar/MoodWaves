@@ -3,37 +3,44 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 class JournalEntry {
-  final String id;
-  final String title;
-  final String body;
-  final DateTime date;
+  String id;
+  String title;
+  String body;
+  DateTime date; // Assuming this is a DateTime object
 
-  JournalEntry({
-    required this.id,
-    required this.title,
-    required this.body,
-    required this.date,
-  });
+  JournalEntry(
+      {required this.id,
+      required this.title,
+      required this.body,
+      required this.date});
 
-  // Convert a JournalEntry instance into a Map
+  static String formatDate(DateTime date) {
+    return DateFormat('yyyy-MM-dd')
+        .format(date); // Using DateFormat from the intl package
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'title': title,
       'body': body,
-      'date': DateFormat('yyyy-MM-dd').format(date),
+      'date': formatDate(date), // Format date when converting to JSON
     };
   }
 
   // Create a JournalEntry instance from a map
   factory JournalEntry.fromJson(Map<String, dynamic> json) {
-    return JournalEntry(
-      id: json['id'],
-      title: json['title'],
-      body: json['body'],
-      date: DateTime.parse(
-          json['date'] as String), // Correctly parses 'yyyy-MM-dd' format
-    );
+    try {
+      return JournalEntry(
+        id: json['id'],
+        title: json['title'],
+        body: json['body'],
+        date: DateTime.parse(json['date'] as String),
+      );
+    } catch (e) {
+      // Handle parsing error, maybe with a default date or by rethrowing a more informative error
+      throw FormatException('Invalid date format', json['date']);
+    }
   }
 }
 
