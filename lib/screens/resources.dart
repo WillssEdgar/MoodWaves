@@ -18,6 +18,10 @@ class ResourcesPage extends StatefulWidget {
 class _ResourcePageState extends State<ResourcesPage>
     implements SearchBarChangeListener {
   _ResourcePageState();
+
+  
+
+  
   List<Resource> resources = sampleLists;
 
   @override
