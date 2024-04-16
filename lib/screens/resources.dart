@@ -22,7 +22,25 @@ class _ResourcePageState extends State<ResourcesPage>
   
 
   
-  List<Resource> resources = sampleLists;
+  List<Resource> resources = [];
+
+  @override
+
+  initState() {
+      super.initState;
+    _loadResourcesFromFirestore();
+
+  }
+
+  Future<void> _loadResourcesFromFirestore() async{
+  List<Resource> returnedList = await sampleLists;
+  List<Resource> newList = resources + returnedList;
+  setState(){
+
+    resources = newList;
+  };
+;
+}
 
   @override
 
@@ -43,6 +61,15 @@ class _ResourcePageState extends State<ResourcesPage>
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = ThemeData(useMaterial3: true);
+
+    if (resources.isEmpty) {
+
+      CircularProgressIndicator();
+    }
+
+    if (resources.isNotEmpty) {
+
+    }
 
     return MaterialApp(
         theme: themeData,
@@ -160,3 +187,8 @@ Future<void> _launchURL(String url) async {
 abstract class SearchBarChangeListener {
   void onSearchbarChanged(String value);
 }
+
+
+
+
+
