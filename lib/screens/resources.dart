@@ -35,10 +35,10 @@ class _ResourcePageState extends State<ResourcesPage>
   Future<void> _loadResourcesFromFirestore() async{
   List<Resource> returnedList = await sampleLists;
   List<Resource> newList = resources + returnedList;
-  setState(){
+  setState((){
 
     resources = newList;
-  };
+  });
 ;
 }
 
