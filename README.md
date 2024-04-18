@@ -37,3 +37,12 @@ Execute the following command to run the project:
 ```
 flutter run
 ```
+
+***
+### Widget test for Details Cards: 
+All files for testing are provided in the /test directory. \
+- mocks.dart : creates mock classes \
+- details_card_test.dart : implements the mock classes and runs the test \
+- mocks.mocks.dart : file that is created from the build_runnner 
+
+##### To run the test: run ``` flutter pub run build_runner build ``` in the terminal in VSCode
