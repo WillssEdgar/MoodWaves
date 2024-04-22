@@ -16,10 +16,10 @@ class MoodLog extends StatefulWidget {
   const MoodLog({Key? key}) : super(key: key);
 
   @override
-  State<MoodLog> createState() => _MoodLogState();
+  State<MoodLog> createState() => MoodLogState();
 }
 
-class _MoodLogState extends State<MoodLog> {
+class MoodLogState extends State<MoodLog> {
   DateTime today = DateTime.now();
   final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   late MoodInfo moodInfo = MoodInfo(DateFormat('yyyy-MM-dd').format(today),
@@ -28,7 +28,7 @@ class _MoodLogState extends State<MoodLog> {
   Color _selectedColor = Colors.yellow.shade400;
 
   /// Fetches mood entry for the selected day.
-  Future<void> _fetchMoodEntry(DateTime selectedDay) async {
+  Future<void> fetchMoodEntry(DateTime selectedDay) async {
     if (userId.isNotEmpty) {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
@@ -86,14 +86,14 @@ class _MoodLogState extends State<MoodLog> {
   @override
   void initState() {
     super.initState();
-    _fetchJournalEntries(DateTime.now());
-    _fetchMoodEntry(DateTime.now());
+    fetchJournalEntries(DateTime.now());
+    fetchMoodEntry(DateTime.now());
   }
 
   late List<JournalEntry> entries = [];
 
   /// Fetches journal entries for the selected day.
-  Future<void> _fetchJournalEntries(DateTime selectedDay) async {
+  Future<void> fetchJournalEntries(DateTime selectedDay) async {
     if (userId.isNotEmpty) {
       String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -183,7 +183,7 @@ class _MoodLogState extends State<MoodLog> {
       }
 
       // Fetch updated mood entry
-      _fetchMoodEntry(selectedDay);
+      fetchMoodEntry(selectedDay);
     }
   }
 
@@ -193,8 +193,8 @@ class _MoodLogState extends State<MoodLog> {
       today = day;
     });
 
-    _fetchJournalEntries(day);
-    _fetchMoodEntry(day);
+    fetchJournalEntries(day);
+    fetchMoodEntry(day);
   }
 
   /// Maps each color to a mood.
@@ -241,10 +241,11 @@ class _MoodLogState extends State<MoodLog> {
                 ),
               ),
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
+              Center(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
                       height: 200,
                       width: 200,
                       child: MyPieChart(
@@ -252,12 +253,12 @@ class _MoodLogState extends State<MoodLog> {
                         type: "moodlog",
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: buildLegend(moodInfo),
-                  )
-                ],
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: buildLegend(moodInfo),
+                    )
+                  ],
+                ),
               ),
               const SizedBox(height: 40),
               Visibility(
@@ -302,10 +303,11 @@ class _MoodLogState extends State<MoodLog> {
                     const SizedBox(height: 20),
                     Center(
                       child: ElevatedButton(
+                        key: Key('submitMood'),
                         onPressed: () {
                           _addToMoodEntries(
                               today, colorNames[_selectedColor] ?? 'Unkown');
-                          _fetchMoodEntry(today);
+                          fetchMoodEntry(today);
                         },
                         child: const Text("Submit Mood"),
                       ),
