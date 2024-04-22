@@ -46,3 +46,10 @@ All files for testing are provided in the /test directory. \
 - mocks.mocks.dart : file that is created from the build_runnner 
 
 ##### To run the test: run ``` flutter pub run build_runner build ``` in the terminal in VSCode
+
+
+### Widget tests for Resource Page
+All files for testing in /test directory
+- mocks.dart : creates mock classes
+- mocks.mocks.dart : file that is created from build_runner, copied over
+- resource_tests.dart : implements mock classes for Resources page
