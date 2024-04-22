@@ -20,10 +20,6 @@ class JournalPageState extends State<JournalPage> {
     _loadEntries();
   }
 
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
   Future<void> _loadEntries() async {
     final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     if (userId.isNotEmpty) {
@@ -89,17 +85,6 @@ class JournalPageState extends State<JournalPage> {
         mainAxisAlignment:
             MainAxisAlignment.end, // Align at the end of the screen
         children: [
-          FloatingActionButton(
-            onPressed: () async {
-              await _signOut();
-              Navigator.of(context).pushReplacementNamed(
-                  '/login'); // Assuming '/login' is your login screen route
-            }, // Icon for sign out
-            backgroundColor: Colors.red,
-            child: const Icon(
-                Icons.exit_to_app), // Red color for emphasis on sign out
-          ),
-          const SizedBox(height: 16), // Space between buttons
           FloatingActionButton(
             onPressed: () {
               final BuildContext currentContext = context;
