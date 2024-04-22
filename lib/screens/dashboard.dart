@@ -17,6 +17,7 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(child: DashboardWidget()),
       floatingActionButton: FloatingActionButton(
+        heroTag: "SignOutBtn",
         onPressed: () async {
           await _signOut(context);
         },

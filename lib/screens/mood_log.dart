@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mood_waves/classes/journal_entry_class.dart';
+import 'package:mood_waves/screens/mood_edit.dart';
 
 import 'package:mood_waves/widgets/pie_chart.dart';
 import 'package:mood_waves/classes/mood.dart';
@@ -212,6 +213,26 @@ class MoodLogState extends State<MoodLog> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Visibility(
+            visible: DateFormat('yyyy-MM-dd').format(today) ==
+                DateFormat('yyyy-MM-dd').format(DateTime.now()),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  child: Text("Edit Moods"),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MoodEdit(),
+                      ),
+                    );
+                  },
+                )
+              ],
+            ),
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

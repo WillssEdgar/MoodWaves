@@ -86,6 +86,7 @@ class JournalPageState extends State<JournalPage> {
             MainAxisAlignment.end, // Align at the end of the screen
         children: [
           FloatingActionButton(
+            heroTag: "btn1",
             onPressed: () {
               final BuildContext currentContext = context;
               final newEntry = JournalEntry(
