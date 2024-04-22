@@ -34,9 +34,9 @@ void main() {
       home: ResourcesPage(),
     ));
 
-    final searchBarFinder = find.byType(SearchBar);
-    print(searchBarFinder);
-    expect(find.text('Search...'), findsOneWidget);
+    final searchBarFinder = find.byType(TextField);
+    
+    expect(find.widgetWithText(TextField, 'Search'),searchBarFinder);
 
     
 
