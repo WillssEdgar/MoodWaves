@@ -20,9 +20,7 @@ class JournalPageState extends State<JournalPage> {
     _entriesStream();
   }
 
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
-  }
+
 
 Stream<List<JournalEntry>> _entriesStream() {
   final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -36,7 +34,7 @@ Stream<List<JournalEntry>> _entriesStream() {
       .orderBy('date', descending: true)
       .snapshots()
       .map((snapshot) => snapshot.docs
-          .map((doc) => JournalEntry.fromJson(doc.data() as Map<String, dynamic>))
+          .map((doc) => JournalEntry.fromJson(doc.data()))
           .toList());
 }
 
