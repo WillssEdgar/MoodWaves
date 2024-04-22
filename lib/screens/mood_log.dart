@@ -27,6 +27,11 @@ class _MoodLogState extends State<MoodLog> {
   late Map<String, Color> moodColors = {};
   Color _selectedColor = Colors.yellow.shade400;
 
+  String latestMoodEntryID = "";
+  bool isEntryToday = false;
+  double rewardAmount = 0;
+  double rewardProgress = 0;
+
   /// Fetches mood entry for the selected day.
   Future<void> _fetchMoodEntry(DateTime selectedDay) async {
     if (userId.isNotEmpty) {
@@ -88,6 +93,39 @@ class _MoodLogState extends State<MoodLog> {
     super.initState();
     _fetchJournalEntries(DateTime.now());
     _fetchMoodEntry(DateTime.now());
+    _fetchLatestMoodEntryID();
+    _fetchUserRewardData();
+  }
+
+  Future<void> _fetchUserRewardData() async {
+    if (userId.isNotEmpty) {
+      final userDocSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      if (userDocSnapshot.exists) {
+        setState(() {
+          rewardAmount = (userDocSnapshot.data() as Map<String, dynamic>)['rewardAmount']?.toDouble() ?? 0;
+          rewardProgress = (userDocSnapshot.data() as Map<String, dynamic>)['rewardProgress']?.toDouble() ?? 0;
+        });
+      }
+    }
+  }
+
+  Future<void> _fetchLatestMoodEntryID() async {
+    if (userId.isNotEmpty) {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('moodEntries')
+          .orderBy('id', descending: true)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        setState(() {
+          latestMoodEntryID = querySnapshot.docs.first.id;
+          isEntryToday = latestMoodEntryID == DateFormat('yyyy-MM-dd').format(DateTime.now());
+        });
+      }
+    }
   }
 
   late List<JournalEntry> entries = [];
@@ -113,79 +151,45 @@ class _MoodLogState extends State<MoodLog> {
     }
   }
 
-  /// Adds mood entries for the selected day.
+  // Adds mood entries for the selected day and updates reward if it's the first entry of the day
   Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
     if (userId.isNotEmpty) {
       String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
-      // Reference to the document in moodEntries collection
       DocumentReference moodEntryDocRef = FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
           .collection('moodEntries')
           .doc(formattedDate);
 
-      // Get the current moodList array
-      List<String> currentMoodList = [];
-      bool isFirstEntryOfDay =
-          false; // Flag to check if it's the first entry of the day
-      try {
-        DocumentSnapshot docSnapshot = await moodEntryDocRef.get();
-        if (docSnapshot.exists) {
-          currentMoodList = List<String>.from(
-              (docSnapshot.data() as Map<String, dynamic>)['moodList'] ?? []);
-        }
-        // If the moodList is empty, it's the first entry of the day
-        isFirstEntryOfDay = currentMoodList.isEmpty;
-      } catch (e) {
-        if (kDebugMode) {
-          print("Error getting moodList: $e");
-        }
-      }
+      DocumentSnapshot docSnapshot = await moodEntryDocRef.get();
+      List<String> currentMoodList = docSnapshot.exists
+          ? List<String>.from((docSnapshot.data() as Map<String, dynamic>)['moodList'] ?? [])
+          : [];
 
       // Add the new mood to the current moodList
       currentMoodList.add(moodName);
-
-      // Update the moodList field in Firestore
       await moodEntryDocRef.set({
         'id': formattedDate,
         'moodList': currentMoodList,
       }, SetOptions(merge: true));
 
-      if (isFirstEntryOfDay) {
-        // Only update logStreak and rewardProgress if it's the first entry of the day
-        DocumentReference userDocRef =
-            FirebaseFirestore.instance.collection('users').doc(userId);
+      // Fetch updated mood entry and latest mood entry ID
+      await _fetchLatestMoodEntryID();
 
-        FirebaseFirestore.instance.runTransaction((transaction) async {
-          DocumentSnapshot snapshot = await transaction.get(userDocRef);
-          if (!snapshot.exists) {
-            throw Exception("User does not exist!");
-          }
-          int currentStreak =
-              (snapshot.data() as Map<String, dynamic>)['logStreak'] ?? 0;
-          int currentRewardProgress =
-              (snapshot.data() as Map<String, dynamic>)['rewardProgress'] ?? 0;
-
-          // Updating both logStreak and rewardProgress in the same transaction
-          transaction.update(userDocRef, {
-            'logStreak': currentStreak + 1,
-            'rewardProgress': currentRewardProgress + 10
-          });
-        }).then((result) {
-          if (kDebugMode) {
-            print("logStreak and rewardProgress updated successfully.");
-          }
-        }).catchError((error) {
-          if (kDebugMode) {
-            print("Failed to update logStreak and rewardProgress: $error");
-          }
+      // If this is the first mood entry today, update the rewardProgress
+      if (!isEntryToday && currentMoodList.length == 1) {
+        setState(() {
+          rewardProgress += rewardAmount; // Update reward progress
+        });
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'rewardProgress': rewardProgress,
         });
       }
-
-      // Fetch updated mood entry
+      // Fetch mood entry again to update the UI
       _fetchMoodEntry(selectedDay);
     }
   }
+
 
   /// Updates the variable today and updates the journal entries and graph
   void _onDaySelected(DateTime day, DateTime focusedDay) {
@@ -313,6 +317,23 @@ class _MoodLogState extends State<MoodLog> {
                   ],
                 ),
               ),
+              if (!isEntryToday) ...[
+          Text(
+            "No entry today",
+            style: TextStyle(fontSize: 30),
+          ),
+          Text(
+            "Reward Progress: $rewardProgress",
+            style: TextStyle(fontSize: 18),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Call _addToMoodEntries when the button is pressed
+              _addToMoodEntries(DateTime.now(), colorNames[_selectedColor] ?? 'Unknown');
+            },
+            child: const Text("Submit Mood"),
+          ),
+        ],
               const SizedBox(height: 60),
               if (entries.isNotEmpty) ...[
                 const Text(

@@ -13,7 +13,7 @@ class RewardsPage extends StatefulWidget {
 
 class RewardsPageState extends State<RewardsPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final double threshold = 100; // Threshold for the reward to be ready
+  final double threshold = 25; // Threshold for the reward to be ready
   double rewardProgress = 0; // Initial progress
   final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
@@ -72,11 +72,73 @@ class RewardsPageState extends State<RewardsPage> {
                 textStyle: const TextStyle(fontSize: 18),
               ),
             ),
+            const SizedBox(height: 30),
+            FutureBuilder<DocumentSnapshot>(
+              future: firestore.collection('users').doc(userId).get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (snapshot.hasData) {
+                    int rewardsCollected = (snapshot.data!.data() as Map<String, dynamic>)['rewardsCollected']?.toInt() ?? 0;
+                    return buildRewardsIcons(rewardsCollected);
+                  }
+                }
+                return const CircularProgressIndicator();
+              },
+            ),
           ],
         ),
       ),
     );
   }
+    Widget buildRewardsIcons(int rewardsCollected) {
+    String status = getStatus(rewardsCollected);
+    Color medalColor = getMedalColor(status);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.verified_user, size: 50, color: medalColor),
+        Text(status, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+
+  String getStatus(int rewardsCollected) {
+    switch (rewardsCollected) {
+      case 0:
+        return 'Starter'; 
+      case 1:
+        return 'Bronze';
+      case 2:
+        return 'Silver';
+      case 3:
+        return 'Black';
+      case 4:
+        return 'Gold';
+      default:
+        return 'Starter';  // Default case for when no rewards have been collected
+    }
+  }
+  Color getMedalColor(String status) {
+    switch (status) {
+      case 'Gold':
+        return Colors.amber;
+      case 'Black':
+        return Colors.black;
+      case 'Silver':
+        return Colors.grey;
+      case 'Bronze':
+        return Colors.brown;  // Bronze color
+      case 'Starter':
+        return Colors.grey;  // Color for Starter level
+      default:
+        return Colors.grey;  // Default color for no status
+    }
+  }
+ 
+        
 
   void collectReward() {
     // Assuming the reward collection sets progress back to 0 or subtracts threshold
@@ -84,7 +146,13 @@ class RewardsPageState extends State<RewardsPage> {
 
     firestore.collection('users').doc(userId).update({
       'rewardProgress': newRewardProgress > 0 ? newRewardProgress : 0,
-    }).then((_) {
+    }).then((_) async {
+        DocumentSnapshot userDoc = await firestore.collection('users').doc(userId).get();
+        int rewardsCollected =  (userDoc.data() as Map<String, dynamic>)['rewardsCollected']?.toInt() ?? 0;
+        firestore.collection('users').doc(userId).update( {
+          'rewardsCollected': rewardsCollected + 1
+        });
+    
       setState(() {
         rewardProgress = newRewardProgress > 0 ? newRewardProgress : 0;
       });
