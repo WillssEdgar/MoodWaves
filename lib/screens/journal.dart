@@ -17,27 +17,26 @@ class JournalPageState extends State<JournalPage> {
   @override
   void initState() {
     super.initState();
-    _loadEntries();
+    _entriesStream();
   }
 
-  Future<void> _loadEntries() async {
-    final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    if (userId.isNotEmpty) {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('journalEntries')
-          .orderBy('date',
-              descending: true) // Assuming you want to order by date
-          .get();
 
-      final entriesList = querySnapshot.docs
-          .map((doc) => JournalEntry.fromJson(doc.data()))
-          .toList();
-      setState(() {
-        entries = entriesList;
-      });
+  Stream<List<JournalEntry>> _entriesStream() {
+
+    final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    if (userId.isEmpty) {
+      return Stream.value(
+          []); // Return an empty stream if the user is not logged in
     }
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('journalEntries')
+        .orderBy('date', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => JournalEntry.fromJson(doc.data()))
+            .toList());
   }
 
   @override
@@ -48,111 +47,70 @@ class JournalPageState extends State<JournalPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: entries.length,
-          itemBuilder: (context, index) {
-            final entry = entries[index];
-            return ListTile(
-              title: Text(entry.title),
-              subtitle: Text("${entry.date}"), // Removed an extra apostrophe
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => JournalEntryEditScreen(
-                      entry: entry,
-                      onSave: (JournalEntry updatedEntry) async {
-                        // Store a reference to the Navigator's state before the async gap.
-                        final navigator = Navigator.of(context);
-
-                        // Refresh entries from Firestore after an update
-                        await _loadEntries();
-
-                        // Check if the widget is still mounted before calling `pop`
-                        if (navigator.mounted) {
-                          navigator
-                              .pop(); // Optionally, pop the edit screen automatically
-                        }
-                      },
-                    ),
-                  ),
+        child: StreamBuilder<List<JournalEntry>>(
+          stream: _entriesStream(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text("No entries found"));
+            }
+            final entries = snapshot.data!;
+            return ListView.builder(
+              itemCount: entries.length,
+              itemBuilder: (context, index) {
+                final entry = entries[index];
+                return ListTile(
+                  title: Text(entry.title),
+                  subtitle: Text("${entry.date}"),
+                  onTap: () => _navigateAndEditEntry(context, entry),
                 );
               },
             );
           },
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment:
-            MainAxisAlignment.end, // Align at the end of the screen
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              final BuildContext currentContext = context;
-              final newEntry = JournalEntry(
-                id: DateTime.now().toString(),
-                title: '',
-                body: '',
-                date: DateTime.now(),
-              );
-              Navigator.of(currentContext).push(
-                MaterialPageRoute(
-                  builder: (context) => JournalEntryEditScreen(
-                    entry: newEntry,
-                    onSave: (JournalEntry updatedEntry) async {
-                      if (updatedEntry.title.isNotEmpty ||
-                          updatedEntry.body.isNotEmpty) {
-                        await _loadEntries();
-                        if (mounted) {
-                          Navigator.of(currentContext).pop();
-                        }
-                      }
-                    },
-                  ),
-                ),
-              );
-            },
-            tooltip: 'Add Entry',
-            child: const Icon(Icons.add),
-          ),
-        ],
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateAndAddEntry(context),
+        tooltip: 'Add Entry',
+        child: const Icon(Icons.add),
+
+      ),
+    );
+  }
+
+  void _navigateAndEditEntry(BuildContext context, JournalEntry entry) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => JournalEntryEditScreen(
+          entry: entry,
+          onSave: (JournalEntry updatedEntry) {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    );
+  }
+
+  void _navigateAndAddEntry(BuildContext context) {
+    final newEntry = JournalEntry(
+      id: DateTime.now()
+          .toString(), // Consider a more robust ID generation strategy
+      title: '',
+      body: '',
+      date: DateTime.now(),
+    );
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => JournalEntryEditScreen(
+          entry: newEntry,
+          onSave: (JournalEntry updatedEntry) {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
     );
   }
 }
-
-
-
-// FloatingActionButton(
-//         onPressed: () {
-//           // Create an empty JournalEntry
-//           final newEntry = JournalEntry(
-//             id: DateTime.now()
-//                 .toString(), // Unique ID based on the current time
-//             title: '', // Empty title
-//             body: '', // Empty body
-//             date: DateTime.now(), // Current date and time
-//           );
-
-//           // Navigate to the JournalEntryEditScreen with the new, empty entry
-//           Navigator.of(context).push(
-//             MaterialPageRoute(
-//               builder: (context) => JournalEntryEditScreen(
-//                 entry: newEntry,
-//                 onSave: (JournalEntry updatedEntry) async {
-//                   if (updatedEntry.title.isNotEmpty ||
-//                       updatedEntry.body.isNotEmpty) {
-//                     await _loadEntries(); // Refresh the list from Firestore
-//                     Navigator.of(context)
-//                         .pop(); // Optionally, pop the edit screen automatically
-//                   }
-//                 },
-//               ),
-//             ),
-//           );
-//         },
-//         tooltip: 'Add Entry',
-//         child: const Icon(
-//           Icons.add,
-//           color: Colors.teal,
-//         ),
-//       ),
