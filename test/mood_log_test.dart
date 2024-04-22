@@ -6,7 +6,7 @@ import 'package:mood_waves/screens/mood_log.dart';
 import 'package:mood_waves/widgets/calendar_widget.dart';
 import 'package:mood_waves/widgets/mood_slider.dart';
 import 'package:mood_waves/widgets/pie_chart.dart';
-import 'mock.dart';
+import 'mocks.dart';
 
 void main() {
   // Set up a mock Firebase app

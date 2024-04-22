@@ -7,7 +7,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mood_waves/classes/journal_entry_class.dart';
 import 'package:mood_waves/screens/journal_entry.dart';
-import 'mock.dart';
+import 'mocks.dart';
 
 @GenerateMocks([FirebaseAuth, FirebaseFirestore])
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
