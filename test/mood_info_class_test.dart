@@ -3,6 +3,7 @@ import 'package:mood_waves/classes/mood_info.dart';
 
 void main() {
   group('MoodInfo Class Tests', () {
+    // Create MoodInfo objects (user story #5)
     test('MoodInfo Constructor Test', () {
       final moodInfo = MoodInfo(
           "02202024", [mood1, mood2, mood3, mood4, mood5, mood6, mood7]);
@@ -12,6 +13,7 @@ void main() {
           equals([mood1, mood2, mood3, mood4, mood5, mood6, mood7]));
     });
 
+    // Create a sample Mood Log
     test('Sample Moods Test', () {
       expect(sampleMoodLog2.length, equals(3));
 
