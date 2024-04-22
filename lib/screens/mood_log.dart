@@ -265,19 +265,20 @@ class MoodLogState extends State<MoodLog> {
               Center(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: MyPieChart(
-                        moodLog: moodInfo,
-                        type: "moodlog",
+                    Expanded(
+                      child: SizedBox(
+                        height: 200,
+                        child: MyPieChart(
+                          moodLog: moodInfo,
+                          type: "moodlog",
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 20),
                     Expanded(
                       child: buildLegend(moodInfo),
-                    )
+                    ),
                   ],
                 ),
               ),
