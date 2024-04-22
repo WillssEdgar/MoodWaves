@@ -20,7 +20,9 @@ class JournalPageState extends State<JournalPage> {
     _entriesStream();
   }
 
+
   Stream<List<JournalEntry>> _entriesStream() {
+
     final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     if (userId.isEmpty) {
       return Stream.value(
@@ -69,10 +71,12 @@ class JournalPageState extends State<JournalPage> {
           },
         ),
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateAndAddEntry(context),
         tooltip: 'Add Entry',
         child: const Icon(Icons.add),
+
       ),
     );
   }

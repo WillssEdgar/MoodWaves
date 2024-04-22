@@ -5,8 +5,11 @@ import 'package:mood_waves/classes/mood.dart';
 class MoodInfo {
   String date;
   List<Mood> moodlist;
+  int value = 0;
 
   MoodInfo(this.date, this.moodlist);
+
+  void increment() => value++;
 }
 
 Mood mood1 = Mood("Happy", Colors.green);
