@@ -33,7 +33,7 @@ void main() {
       expect(find.byType(JournalPage), findsOneWidget);
     });
 
-    testWidgets("Journal Test 2", (WidgetTester tester) async {
+    testWidgets("Journal Second Test", (WidgetTester tester) async {
       await tester.pumpWidget(MaterialApp(
         home: JournalPage(),
       ));
