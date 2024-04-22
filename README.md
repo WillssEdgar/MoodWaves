@@ -37,3 +37,14 @@ Execute the following command to run the project:
 ```
 flutter run
 ```
+
+***
+### Class tests for events, mood, and mood_info: 
+- events_class_test.dart : tests construction of a MentalHealthEvent object and verifies the data in a list of MentalHealthEvent objects
+- mood_class_test.dart : tests construction of a Mood object
+- mood_info_class_test: tests construction of MoodInfo object which uses moods and verifies data in a list of MoodInfo
+
+- To run the test(s), either use:
+  - the Testing panel in the sidebar of VSCode or
+  - run ``` flutter test ``` to run all test within the project or
+  - run ``` flutter test test/[filename.dart] ``` to run indiviudal tests 

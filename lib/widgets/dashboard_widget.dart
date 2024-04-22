@@ -123,6 +123,15 @@ class _DashboardWidgetState extends State<DashboardWidget> {
               )
             ],
           ),
+          Center(
+            child: Column(
+              children: [
+                ElevatedButton(
+                    onPressed: () => _fetchMoodEntry(today),
+                    child: const Text('Refresh')),
+              ],
+            ),
+          )
         ] else ...[
           const Center(
             child: Text("No mood data available"),
