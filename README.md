@@ -62,3 +62,5 @@ All files for testing in /test directory
 - mocks.dart : creates mock classes
 - mocks.mocks.dart : file that is created from build_runner, copied over
 - resource_tests.dart : implements mock classes for Resources page
+
+#### To run the tests: ```flutter test``` or ```flutter test test/[filename.dart]```
