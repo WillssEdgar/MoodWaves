@@ -151,45 +151,40 @@ class _MoodLogState extends State<MoodLog> {
     }
   }
 
-  // Adds mood entries for the selected day and updates reward if it's the first entry of the day
+  /// Adds mood entries for the selected day.
   Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
     if (userId.isNotEmpty) {
       String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
+      // Reference to the document in moodEntries collection
       DocumentReference moodEntryDocRef = FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
           .collection('moodEntries')
           .doc(formattedDate);
 
-      DocumentSnapshot docSnapshot = await moodEntryDocRef.get();
-      List<String> currentMoodList = docSnapshot.exists
-          ? List<String>.from((docSnapshot.data() as Map<String, dynamic>)['moodList'] ?? [])
-          : [];
+      // Get the current moodList array
+      List<String> currentMoodList = [];
+      bool isFirstEntryOfDay = currentMoodList.isEmpty;
+      if (isFirstEntryOfDay && !isEntryToday) {
+        rewardProgress += rewardAmount;
+        await FirebaseFirestore.instance.collection('users').doc(userId).set({
+          'rewardProgress': rewardProgress,
+        }, SetOptions(merge: true));
+      }
 
       // Add the new mood to the current moodList
       currentMoodList.add(moodName);
+
+      // Update the moodList field in Firestore
       await moodEntryDocRef.set({
         'id': formattedDate,
         'moodList': currentMoodList,
       }, SetOptions(merge: true));
 
-      // Fetch updated mood entry and latest mood entry ID
-      await _fetchLatestMoodEntryID();
-
-      // If this is the first mood entry today, update the rewardProgress
-      if (!isEntryToday && currentMoodList.length == 1) {
-        setState(() {
-          rewardProgress += rewardAmount; // Update reward progress
-        });
-        await FirebaseFirestore.instance.collection('users').doc(userId).update({
-          'rewardProgress': rewardProgress,
-        });
-      }
-      // Fetch mood entry again to update the UI
+      // Fetch updated mood entry
       _fetchMoodEntry(selectedDay);
     }
   }
-
 
   /// Updates the variable today and updates the journal entries and graph
   void _onDaySelected(DateTime day, DateTime focusedDay) {
@@ -318,22 +313,24 @@ class _MoodLogState extends State<MoodLog> {
                 ),
               ),
               if (!isEntryToday) ...[
-          Text(
-            "No entry today",
-            style: TextStyle(fontSize: 30),
-          ),
-          Text(
-            "Reward Progress: $rewardProgress",
-            style: TextStyle(fontSize: 18),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Call _addToMoodEntries when the button is pressed
-              _addToMoodEntries(DateTime.now(), colorNames[_selectedColor] ?? 'Unknown');
-            },
-            child: const Text("Submit Mood"),
-          ),
-        ],
+                Text(
+                  "No entry today",
+                  style: TextStyle(fontSize: 30),
+                ),
+                Text(
+                  "Reward Progress: $rewardProgress",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ] else if (latestMoodEntryID.isNotEmpty) ...[
+                Text(
+                  "Latest Mood Entry ID: $latestMoodEntryID",
+                  style: TextStyle(fontSize: 30),
+                ),
+                Text(
+                  "Reward Progress: $rewardProgress",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
               const SizedBox(height: 60),
               if (entries.isNotEmpty) ...[
                 const Text(
