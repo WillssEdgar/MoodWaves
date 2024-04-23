@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mood_waves/widgets/details_card.dart';
 import 'package:mood_waves/classes/mood_info.dart';
 import 'package:mood_waves/classes/mood.dart';
@@ -120,7 +119,10 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         // Place the DetailsCard widget first
         SizedBox(
           height: screenSize.height * 0.5,
-          child: const DetailsCard(),
+          child: Padding(
+            padding: EdgeInsets.all(15),
+            child: const DetailsCard(),
+          ),
         ),
         // Then the MyPieChart widget
         Card(

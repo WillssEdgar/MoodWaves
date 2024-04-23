@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mood_waves/classes/journal_entry_class.dart';
@@ -87,8 +86,57 @@ class MoodLogState extends State<MoodLog> {
   @override
   void initState() {
     super.initState();
+<<<<<<< Updated upstream
     fetchJournalEntries(DateTime.now());
     fetchMoodEntry(DateTime.now());
+=======
+
+    _fetchJournalEntries(DateTime.now());
+    _fetchMoodEntry(DateTime.now());
+    _fetchLatestMoodEntryID();
+    _fetchUserRewardData();
+  }
+
+  Future<void> _fetchUserRewardData() async {
+    if (userId.isNotEmpty) {
+      final userDocSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      if (userDocSnapshot.exists) {
+        setState(() {
+          rewardAmount =
+              (userDocSnapshot.data() as Map<String, dynamic>)['rewardAmount']
+                      ?.toDouble() ??
+                  0;
+          rewardProgress =
+              (userDocSnapshot.data() as Map<String, dynamic>)['rewardProgress']
+                      ?.toDouble() ??
+                  0;
+        });
+      }
+    }
+  }
+
+  Future<void> _fetchLatestMoodEntryID() async {
+    if (userId.isNotEmpty) {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('moodEntries')
+          .orderBy('id', descending: true)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        setState(() {
+          latestMoodEntryID = querySnapshot.docs.first.id;
+          isEntryToday = latestMoodEntryID ==
+              DateFormat('yyyy-MM-dd').format(DateTime.now());
+        });
+      }
+    }
+>>>>>>> Stashed changes
   }
 
   late List<JournalEntry> entries = [];
@@ -114,7 +162,11 @@ class MoodLogState extends State<MoodLog> {
     }
   }
 
+<<<<<<< Updated upstream
   /// Adds mood entries for the selected day.
+=======
+  /// Adds mood entries for the selected day and updates rewards if it's the first entry of the day.
+>>>>>>> Stashed changes
   Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
     if (userId.isNotEmpty) {
       String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
@@ -125,6 +177,7 @@ class MoodLogState extends State<MoodLog> {
           .collection('moodEntries')
           .doc(formattedDate);
 
+<<<<<<< Updated upstream
       // Get the current moodList array
       List<String> currentMoodList = [];
       bool isFirstEntryOfDay =
@@ -147,11 +200,25 @@ class MoodLogState extends State<MoodLog> {
       currentMoodList.add(moodName);
 
       // Update the moodList field in Firestore
+=======
+      // Fetch the current mood list from Firestore to ensure it's up-to-date
+      DocumentSnapshot docSnapshot = await moodEntryDocRef.get();
+      List<String> currentMoodList = docSnapshot.exists
+          ? List<String>.from(
+              (docSnapshot.data() as Map<String, dynamic>)['moodList'] ?? [])
+          : [];
+
+      bool isFirstEntryOfDay = currentMoodList.isEmpty;
+
+      // Add the new mood to the mood list
+      currentMoodList.add(moodName);
+>>>>>>> Stashed changes
       await moodEntryDocRef.set({
         'id': formattedDate,
         'moodList': currentMoodList,
       }, SetOptions(merge: true));
 
+<<<<<<< Updated upstream
       if (isFirstEntryOfDay) {
         // Only update logStreak and rewardProgress if it's the first entry of the day
         DocumentReference userDocRef =
@@ -185,6 +252,25 @@ class MoodLogState extends State<MoodLog> {
 
       // Fetch updated mood entry
       fetchMoodEntry(selectedDay);
+=======
+      // Update the reward progress only if it's the first entry of the day and no reward has been given yet
+      if (isFirstEntryOfDay && !isEntryToday) {
+        rewardProgress += rewardAmount;
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .update({
+          'rewardProgress': rewardProgress,
+        });
+        isEntryToday = true; // Prevent further rewards for today
+
+        // Fetch updated mood entry
+        _fetchMoodEntry(selectedDay);
+      }
+
+      // Fetch updated mood entry to refresh the UI
+      _fetchMoodEntry(selectedDay);
+>>>>>>> Stashed changes
     }
   }
 
@@ -256,10 +342,16 @@ class MoodLogState extends State<MoodLog> {
               const Text(
                 "Mood Graph",
                 style: TextStyle(
+<<<<<<< Updated upstream
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 30,
                 ),
+=======
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30),
+>>>>>>> Stashed changes
               ),
               const SizedBox(height: 10),
               Center(
@@ -276,6 +368,10 @@ class MoodLogState extends State<MoodLog> {
                         ),
                       ),
                     ),
+<<<<<<< Updated upstream
+=======
+                    const SizedBox(height: 20),
+>>>>>>> Stashed changes
                     Expanded(
                       child: buildLegend(moodInfo),
                     ),
@@ -329,7 +425,7 @@ class MoodLogState extends State<MoodLog> {
                         onPressed: () {
                           _addToMoodEntries(
                               today, colorNames[_selectedColor] ?? 'Unkown');
-                          fetchMoodEntry(today);
+                          _fetchMoodEntry(today);
                         },
                         child: const Text("Submit Mood"),
                       ),
@@ -359,6 +455,7 @@ class MoodLogState extends State<MoodLog> {
                 ),
               ] else ...[
                 Text(
+<<<<<<< Updated upstream
                   "No Journal Entries for ${DateFormat('yyyy-MM-dd').format(today)}",
                   style: const TextStyle(
                     color: Colors.black,
@@ -366,6 +463,13 @@ class MoodLogState extends State<MoodLog> {
                     fontSize: 20,
                   ),
                 )
+=======
+                    "No Journal Entries for ${DateFormat('yyyy-MM-dd').format(today)}",
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20)),
+>>>>>>> Stashed changes
               ],
             ],
           ),
