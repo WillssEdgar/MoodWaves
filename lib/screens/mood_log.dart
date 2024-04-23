@@ -28,8 +28,13 @@ class MoodLogState extends State<MoodLog> {
   late Map<String, Color> moodColors = {};
   Color _selectedColor = Colors.yellow.shade400;
 
+  String latestMoodEntryID = "";
+  bool isEntryToday = false;
+  double rewardAmount = 0;
+  double rewardProgress = 0;
+
   /// Fetches mood entry for the selected day.
-  Future<void> fetchMoodEntry(DateTime selectedDay) async {
+  Future<void> _fetchMoodEntry(DateTime selectedDay) async {
     if (userId.isNotEmpty) {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
@@ -67,7 +72,6 @@ class MoodLogState extends State<MoodLog> {
 
   /// Maps mood names to corresponding colors.
   Color getColorForMoodName(String moodName) {
-    // Here you can associate mood names with colors
     switch (moodName.toLowerCase()) {
       case 'peaceful':
         return Colors.greenAccent.shade400;
@@ -87,14 +91,48 @@ class MoodLogState extends State<MoodLog> {
   @override
   void initState() {
     super.initState();
-    fetchJournalEntries(DateTime.now());
-    fetchMoodEntry(DateTime.now());
+
+    _fetchJournalEntries(DateTime.now());
+    _fetchMoodEntry(DateTime.now());
+    _fetchLatestMoodEntryID();
+    _fetchUserRewardData();
+  }
+
+  Future<void> _fetchUserRewardData() async {
+    if (userId.isNotEmpty) {
+      final userDocSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      if (userDocSnapshot.exists) {
+        setState(() {
+          rewardAmount = (userDocSnapshot.data() as Map<String, dynamic>)['rewardAmount']?.toDouble() ?? 0;
+          rewardProgress = (userDocSnapshot.data() as Map<String, dynamic>)['rewardProgress']?.toDouble() ?? 0;
+        });
+      }
+    }
+  }
+
+  Future<void> _fetchLatestMoodEntryID() async {
+    if (userId.isNotEmpty) {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('moodEntries')
+          .orderBy('id', descending: true)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        setState(() {
+          latestMoodEntryID = querySnapshot.docs.first.id;
+          isEntryToday = latestMoodEntryID == DateFormat('yyyy-MM-dd').format(DateTime.now());
+        });
+      }
+    }
   }
 
   late List<JournalEntry> entries = [];
 
   /// Fetches journal entries for the selected day.
-  Future<void> fetchJournalEntries(DateTime selectedDay) async {
+  Future<void> _fetchJournalEntries(DateTime selectedDay) async {
     if (userId.isNotEmpty) {
       String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -114,79 +152,51 @@ class MoodLogState extends State<MoodLog> {
     }
   }
 
-  /// Adds mood entries for the selected day.
-  Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
-    if (userId.isNotEmpty) {
-      String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
-      // Reference to the document in moodEntries collection
-      DocumentReference moodEntryDocRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('moodEntries')
-          .doc(formattedDate);
+  /// Adds mood entries for the selected day and updates rewards if it's the first entry of the day.
+Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
+  if (userId.isNotEmpty) {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
+    // Reference to the document in moodEntries collection
+    DocumentReference moodEntryDocRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('moodEntries')
+        .doc(formattedDate);
 
-      // Get the current moodList array
-      List<String> currentMoodList = [];
-      bool isFirstEntryOfDay =
-          false; // Flag to check if it's the first entry of the day
-      try {
-        DocumentSnapshot docSnapshot = await moodEntryDocRef.get();
-        if (docSnapshot.exists) {
-          currentMoodList = List<String>.from(
-              (docSnapshot.data() as Map<String, dynamic>)['moodList'] ?? []);
-        }
-        // If the moodList is empty, it's the first entry of the day
-        isFirstEntryOfDay = currentMoodList.isEmpty;
-      } catch (e) {
-        if (kDebugMode) {
-          print("Error getting moodList: $e");
-        }
-      }
+    // Fetch the current mood list from Firestore to ensure it's up-to-date
+    DocumentSnapshot docSnapshot = await moodEntryDocRef.get();
+    List<String> currentMoodList = docSnapshot.exists
+        ? List<String>.from((docSnapshot.data() as Map<String, dynamic>)['moodList'] ?? [])
+        : [];
 
-      // Add the new mood to the current moodList
-      currentMoodList.add(moodName);
+    bool isFirstEntryOfDay = currentMoodList.isEmpty;
 
-      // Update the moodList field in Firestore
-      await moodEntryDocRef.set({
-        'id': formattedDate,
-        'moodList': currentMoodList,
-      }, SetOptions(merge: true));
+    // Add the new mood to the mood list
+    currentMoodList.add(moodName);
+    await moodEntryDocRef.set({
+      'id': formattedDate,
+      'moodList': currentMoodList,
+    }, SetOptions(merge: true));
 
-      if (isFirstEntryOfDay) {
-        // Only update logStreak and rewardProgress if it's the first entry of the day
-        DocumentReference userDocRef =
-            FirebaseFirestore.instance.collection('users').doc(userId);
 
-        FirebaseFirestore.instance.runTransaction((transaction) async {
-          DocumentSnapshot snapshot = await transaction.get(userDocRef);
-          if (!snapshot.exists) {
-            throw Exception("User does not exist!");
-          }
-          int currentStreak =
-              (snapshot.data() as Map<String, dynamic>)['logStreak'] ?? 0;
-          int currentRewardProgress =
-              (snapshot.data() as Map<String, dynamic>)['rewardProgress'] ?? 0;
-
-          // Updating both logStreak and rewardProgress in the same transaction
-          transaction.update(userDocRef, {
-            'logStreak': currentStreak + 1,
-            'rewardProgress': currentRewardProgress + 10
-          });
-        }).then((result) {
-          if (kDebugMode) {
-            print("logStreak and rewardProgress updated successfully.");
-          }
-        }).catchError((error) {
-          if (kDebugMode) {
-            print("Failed to update logStreak and rewardProgress: $error");
-          }
-        });
-      }
+    // Update the reward progress only if it's the first entry of the day and no reward has been given yet
+    if (isFirstEntryOfDay && !isEntryToday) {
+      rewardProgress += rewardAmount;
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'rewardProgress': rewardProgress,
+      });
+      isEntryToday = true; // Prevent further rewards for today
 
       // Fetch updated mood entry
       fetchMoodEntry(selectedDay);
+
     }
+
+    // Fetch updated mood entry to refresh the UI
+    _fetchMoodEntry(selectedDay);
   }
+}
+
 
   /// Updates the variable today and updates the journal entries and graph
   void _onDaySelected(DateTime day, DateTime focusedDay) {
@@ -194,8 +204,8 @@ class MoodLogState extends State<MoodLog> {
       today = day;
     });
 
-    fetchJournalEntries(day);
-    fetchMoodEntry(day);
+    _fetchJournalEntries(day);
+    _fetchMoodEntry(day);
   }
 
   /// Maps each color to a mood.
@@ -206,6 +216,7 @@ class MoodLogState extends State<MoodLog> {
     Colors.blue.shade400: 'Sad',
     Colors.deepPurple.shade300: 'Sick',
   };
+
 
   @override
   Widget build(BuildContext context) {
@@ -247,19 +258,27 @@ class MoodLogState extends State<MoodLog> {
                   ),
                 ),
               ),
-              Text(
-                "Selected Day: ${DateFormat('yyyy-MM-dd').format(today)}",
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 30),
-              const Text(
-                "Mood Graph",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
+            ),
+            Text(
+              "Selected Day: ${DateFormat('yyyy-MM-dd').format(today)}",
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              "Mood Graph",
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 30),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 200,
+                    width: 200,
+                    child: MyPieChart(moodLog: moodInfo, type: "moodlog"),
+                  ),
                 ),
+
               ),
               const SizedBox(height: 10),
               Center(
@@ -275,7 +294,20 @@ class MoodLogState extends State<MoodLog> {
                           type: "moodlog",
                         ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Text("Selected Color: ${colorNames[_selectedColor] ?? 'Unknown'}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _addToMoodEntries(today, colorNames[_selectedColor] ?? 'Unknown');
+                        _fetchMoodEntry(today);  // Fetch mood entry to update the graph
+                      },
+                      child: const Text("Submit Mood"),
                     ),
+
                     Expanded(
                       child: buildLegend(moodInfo),
                     ),
@@ -336,43 +368,17 @@ class MoodLogState extends State<MoodLog> {
                     ),
                   ],
                 ),
+
               ),
-              const SizedBox(height: 60),
-              if (entries.isNotEmpty) ...[
-                const Text(
-                  "Journal Entries",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: entries
-                      .map((entry) => Align(
-                          alignment: Alignment.centerLeft,
-                          child: DisplayJournal(journalEntry: entry)))
-                      .toList(),
-                ),
-              ] else ...[
-                Text(
-                  "No Journal Entries for ${DateFormat('yyyy-MM-dd').format(today)}",
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                )
-              ],
+            ] else ...[
+              Text("No Journal Entries for ${DateFormat('yyyy-MM-dd').format(today)}", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
             ],
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      ],
+    ),
+  );
+}
 }
 
 /// Creates the widget that displays the journal.
