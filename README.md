@@ -39,6 +39,15 @@ flutter run
 ```
 
 ***
+### Class tests for events, mood, and mood_info: 
+- events_class_test.dart : tests construction of a MentalHealthEvent object and verifies the data in a list of MentalHealthEvent objects
+- mood_class_test.dart : tests construction of a Mood object
+- mood_info_class_test: tests construction of MoodInfo object which uses moods and verifies data in a list of MoodInfo
+
+- To run the test(s), either use:
+  - the Testing panel in the sidebar of VSCode or
+  - run ``` flutter test ``` to run all test within the project or
+  - run ``` flutter test test/[filename.dart] ``` to run indiviudal tests 
 ### Widget test for Details Cards: 
 All files for testing are provided in the /test directory. \
 - mocks.dart : creates mock classes \
@@ -46,3 +55,12 @@ All files for testing are provided in the /test directory. \
 - mocks.mocks.dart : file that is created from the build_runnner 
 
 ##### To run the test: run ``` flutter pub run build_runner build ``` in the terminal in VSCode
+
+
+### Widget tests for Resource Page
+All files for testing in /test directory
+- mocks.dart : creates mock classes
+- mocks.mocks.dart : file that is created from build_runner, copied over
+- resource_tests.dart : implements mock classes for Resources page
+
+#### To run the tests: ```flutter test``` or ```flutter test test/[filename.dart]```

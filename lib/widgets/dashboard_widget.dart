@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mood_waves/widgets/details_card.dart';
 import 'package:mood_waves/classes/mood_info.dart';
 import 'package:mood_waves/classes/mood.dart';
@@ -23,6 +24,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   DateTime today = DateTime.now();
   final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   late MoodInfo moodInfo;
+  double rewardProgress = 0; // Initial progress
+  final double threshold = 100;
 
   @override
   void initState() {
@@ -30,6 +33,20 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     moodInfo = MoodInfo(DateFormat('yyyy-MM-dd').format(today),
         [Mood("No moods entered for this date", Colors.blueGrey.shade100)]);
     _fetchMoodEntry(today);
+    _fetchRewardProgress();
+  }
+
+  void _fetchRewardProgress() async {
+    DocumentSnapshot snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (snapshot.exists) {
+      setState(() {
+        rewardProgress =
+            (snapshot.data() as Map<String, dynamic>)['rewardProgress']
+                    ?.toDouble() ??
+                0;
+      });
+    }
   }
 
   /// Fetches the mood data for the selected day from the Firestore database.
@@ -106,28 +123,82 @@ class _DashboardWidgetState extends State<DashboardWidget> {
           child: const DetailsCard(),
         ),
         // Then the MyPieChart widget
-        if (moodInfo.moodlist.isNotEmpty) ...[
-          Row(
-            children: [
-              SizedBox(
-                height: 200,
-                width: 200,
-                child: MyPieChart(
-                  moodLog: moodInfo,
-                  type: 'moodlog',
-                ),
+        Card(
+          elevation: 3,
+          margin: EdgeInsets.all(20),
+          color: Colors.teal.shade100,
+          child: Padding(
+            padding: EdgeInsets.all(40),
+            child: Center(
+              child: Column(
+                children: [
+                  if (moodInfo.moodlist.isNotEmpty) ...[
+                    Text(
+                      "Mood Chart",
+                      style:
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 200,
+                            child: MyPieChart(
+                              moodLog: moodInfo,
+                              type: "moodlog",
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 40,
+                        ),
+                        SizedBox(
+                          width: 75,
+                          child: buildLegend(moodInfo),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 50),
+                    Text(
+                      "Rewards Progress",
+                      style:
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: 20,
+                        ),
+                        LinearProgressIndicator(
+                          value: rewardProgress / threshold,
+                          backgroundColor: Colors.grey[300],
+                          valueColor:
+                              const AlwaysStoppedAnimation<Color>(Colors.teal),
+                          minHeight: 20,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 50),
+                    Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              _fetchMoodEntry(today);
+                              _fetchRewardProgress();
+                            },
+                            child: const Text('Refresh')),
+                      ],
+                    ),
+                  ] else ...[
+                    const Center(
+                      child: Text("No mood data available"),
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: buildLegend(moodInfo),
-              )
-            ],
+            ),
           ),
-        ] else ...[
-          const Center(
-            child: Text("No mood data available"),
-          ),
-        ],
+        ),
       ],
     );
   }

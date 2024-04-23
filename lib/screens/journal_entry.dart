@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mood_waves/classes/journal_entry_class.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-// Add a callback parameter to the constructor to handle saving changes
 class JournalEntryEditScreen extends StatefulWidget {
   final JournalEntry entry;
   final Function(JournalEntry) onSave;
@@ -38,6 +37,9 @@ class JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
   void _saveChangesAndExit() async {
     final User? user = auth.currentUser;
     final String userId = user?.uid ?? '';
+    DateTime now = DateTime.now();
+    DateTime formattedDate =
+        DateTime(now.year, now.month, now.day); // This strips time
 
     if (userId.isNotEmpty) {
       if (_titleController.text != widget.entry.title ||
@@ -47,7 +49,7 @@ class JournalEntryEditScreenState extends State<JournalEntryEditScreen> {
           id: widget.entry.id, // Assuming id is still relevant
           title: _titleController.text,
           body: _bodyController.text,
-          date: widget.entry.date,
+          date: formattedDate, // Pass the formatted date
         );
 
         showDialog(

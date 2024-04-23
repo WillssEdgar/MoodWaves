@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mood_waves/classes/journal_entry_class.dart';
+import 'package:mood_waves/screens/mood_edit.dart';
 
 import 'package:mood_waves/widgets/pie_chart.dart';
 import 'package:mood_waves/classes/mood.dart';
@@ -16,10 +17,10 @@ class MoodLog extends StatefulWidget {
   const MoodLog({Key? key}) : super(key: key);
 
   @override
-  State<MoodLog> createState() => _MoodLogState();
+  State<MoodLog> createState() => MoodLogState();
 }
 
-class _MoodLogState extends State<MoodLog> {
+class MoodLogState extends State<MoodLog> {
   DateTime today = DateTime.now();
   final String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   late MoodInfo moodInfo = MoodInfo(DateFormat('yyyy-MM-dd').format(today),
@@ -90,6 +91,7 @@ class _MoodLogState extends State<MoodLog> {
   @override
   void initState() {
     super.initState();
+
     _fetchJournalEntries(DateTime.now());
     _fetchMoodEntry(DateTime.now());
     _fetchLatestMoodEntryID();
@@ -176,6 +178,7 @@ Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
       'moodList': currentMoodList,
     }, SetOptions(merge: true));
 
+
     // Update the reward progress only if it's the first entry of the day and no reward has been given yet
     if (isFirstEntryOfDay && !isEntryToday) {
       rewardProgress += rewardAmount;
@@ -183,6 +186,10 @@ Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
         'rewardProgress': rewardProgress,
       });
       isEntryToday = true; // Prevent further rewards for today
+
+      // Fetch updated mood entry
+      fetchMoodEntry(selectedDay);
+
     }
 
     // Fetch updated mood entry to refresh the UI
@@ -210,23 +217,45 @@ Future<void> _addToMoodEntries(DateTime selectedDay, String moodName) async {
     Colors.deepPurple.shade300: 'Sick',
   };
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            Center(
-              child: SizedBox(
-                height: 360,
-                width: 400,
-                child: MyCalendar(
-                  selectedDay: today,
-                  onDaySelected: _onDaySelected,
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Visibility(
+            visible: DateFormat('yyyy-MM-dd').format(today) ==
+                DateFormat('yyyy-MM-dd').format(DateTime.now()),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  child: Text("Edit Moods"),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MoodEdit(),
+                      ),
+                    );
+                  },
+                )
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+              Center(
+                child: SizedBox(
+                  height: 360,
+                  width: 400,
+                  child: MyCalendar(
+                    selectedDay: today,
+                    onDaySelected: _onDaySelected,
+                  ),
                 ),
               ),
             ),
@@ -249,33 +278,20 @@ Widget build(BuildContext context) {
                     child: MyPieChart(moodLog: moodInfo, type: "moodlog"),
                   ),
                 ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: buildLegend(moodInfo),
-                )
-              ],
-            ),
-            const SizedBox(height: 40),
-            Visibility(
-              visible: DateFormat('yyyy-MM-dd').format(today) == DateFormat('yyyy-MM-dd').format(DateTime.now()),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Center(
-                    child: Text("Create a New Mood", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 30)),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: MoodSlider(
-                          onColorSelected: (value) {
-                            int index = (value * (timelineColors.length - 1)).round();
-                            setState(() {
-                              _selectedColor = timelineColors[index];
-                            });
-                          },
+
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 200,
+                        child: MyPieChart(
+                          moodLog: moodInfo,
+                          type: "moodlog",
                         ),
                       ),
                     ],
@@ -291,18 +307,68 @@ Widget build(BuildContext context) {
                       },
                       child: const Text("Submit Mood"),
                     ),
-                  ),
-                ],
+
+                    Expanded(
+                      child: buildLegend(moodInfo),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 60),
-            if (entries.isNotEmpty) ...[
-              const Text("Journal Entries", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 30)),
-              const SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: entries.map((entry) => Align(alignment: Alignment.centerLeft, child: DisplayJournal(journalEntry: entry))).toList(),
+              const SizedBox(height: 40),
+              Visibility(
+                visible: DateFormat('yyyy-MM-dd').format(today) ==
+                    DateFormat('yyyy-MM-dd').format(DateTime.now()),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Center(
+                      child: Text(
+                        "Create a New Mood",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: MoodSlider(
+                            onColorSelected: (value) {
+                              int index =
+                                  (value * (timelineColors.length - 1)).round();
+                              setState(() {
+                                _selectedColor = timelineColors[index];
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Selected Color: ${colorNames[_selectedColor] ?? 'Unknown'}",
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        key: Key('submitMood'),
+                        onPressed: () {
+                          _addToMoodEntries(
+                              today, colorNames[_selectedColor] ?? 'Unkown');
+                          fetchMoodEntry(today);
+                        },
+                        child: const Text("Submit Mood"),
+                      ),
+                    ),
+                  ],
+                ),
+
               ),
             ] else ...[
               Text("No Journal Entries for ${DateFormat('yyyy-MM-dd').format(today)}", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),

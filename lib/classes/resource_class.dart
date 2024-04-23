@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 /// Defines a resource for the resources page, contains the variables inside
 /// 
 /// Returns a resource object/widget
@@ -16,8 +18,32 @@ class Resource {
       required this.resourceDesc});
 }
 
-var sampleLists = [
-  Resource(
+/// Retrieves each item from the Firestore database's resources file. In event of failure, returns dummy data.
+Future <List<Resource>> firestoreFunct() async {
+
+  List<Resource> functioningList = [];
+
+  try {
+
+    QuerySnapshot instanceShot = await FirebaseFirestore.instance.collection('resources').get();
+
+    instanceShot.docs.forEach((doc) {
+
+      functioningList.add(Resource(
+        resourceName: doc['name'],
+        resourceNum: doc['num'],
+        resourceDesc: doc['desc'],
+        resourceURL: doc['url'],
+      ));
+
+    });
+
+  }
+
+  catch (e) {
+
+    return functioningList = [
+      Resource(
       resourceName: "National Mental Health Helpline",
       resourceNum: 2341414,
       resourceDesc: "Available 24/7 for mental health support.",
@@ -42,4 +68,13 @@ var sampleLists = [
       resourceNum: 00005,
       resourceDesc: "Schedule appointments with helpful staff",
       resourceURL: "https://uncw.edu/seahawk-life/health-wellness/counseling/")
-];
+
+    ];
+  }
+
+  return functioningList;
+
+}
+
+
+var sampleLists = firestoreFunct();

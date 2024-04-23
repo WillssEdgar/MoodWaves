@@ -23,18 +23,16 @@ class MyPieChart extends StatelessWidget {
       radius = 20;
     }
 
-    return Center(
-      child: PieChart(
-        PieChartData(
-          sections: _generateSections(radius),
-          borderData: FlBorderData(
-            show: false,
-          ),
-          // centerSpaceRadius: 50,
-
-          centerSpaceRadius: centerSpaceRadius,
-          sectionsSpace: sectionsSpace,
+    return PieChart(
+      PieChartData(
+        sections: _generateSections(radius),
+        borderData: FlBorderData(
+          show: false,
         ),
+        // centerSpaceRadius: 50,
+
+        centerSpaceRadius: centerSpaceRadius,
+        sectionsSpace: sectionsSpace,
       ),
     );
   }
@@ -98,14 +96,14 @@ Widget buildLegend(MoodInfo moodLog) {
     }
   }
 
-  return SizedBox(
-    width: 150,
-    child: SingleChildScrollView(
-      child: Column(
-        children: List.generate(
-          colors.length,
-          (index) {
-            return Padding(
+  return SingleChildScrollView(
+    child: Column(
+      children: List.generate(
+        colors.length,
+        (index) {
+          return SizedBox(
+            width: 100,
+            child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(
                 children: [
@@ -123,9 +121,9 @@ Widget buildLegend(MoodInfo moodLog) {
                   ),
                 ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     ),
   );
