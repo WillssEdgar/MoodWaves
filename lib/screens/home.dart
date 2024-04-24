@@ -43,12 +43,7 @@ class HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.teal,
         centerTitle: true,
       ),
-
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ), // IndexedStack to maintain state of screens
-
+      body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
