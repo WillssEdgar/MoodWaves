@@ -108,8 +108,10 @@ class _RescSearchBarState extends State<RescSearchBar> {
   Widget build(BuildContext context) {
     return TextField(
       onChanged: (newText) {
+
+        String validText = _ValidatorFunct(newText);
         setState(() {
-          widget.listener.onSearchbarChanged(newText);
+          widget.listener.onSearchbarChanged(validText);
         });
       },
       decoration: const InputDecoration(
@@ -190,5 +192,11 @@ abstract class SearchBarChangeListener {
 
 
 
+String _ValidatorFunct(stringToValidate) {
 
+  List<String> listOfComponents = stringToValidate.split("");
+
+  return stringToValidate;
+
+}
 
