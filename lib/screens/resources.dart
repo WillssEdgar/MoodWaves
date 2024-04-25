@@ -195,10 +195,12 @@ abstract class SearchBarChangeListener {
 /// Whitelist, not blacklist
 String _ValidatorFunct(stringToValidate) {
 
-  if (stringToValidate.contains(new RegExp(r'[^a-zA-Z0-9 ]'))) {
-    stringToValidate = "";
+  if (stringToValidate.contains(new RegExp(r'^[a-zA-Z0-9 ]*$'))) { // Returns only valid input
+    return stringToValidate;
+  } else {
+    return "";
   }
-  return stringToValidate;
+  
 
 }
 
