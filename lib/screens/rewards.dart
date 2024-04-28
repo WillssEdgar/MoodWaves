@@ -142,10 +142,11 @@ class RewardsPageState extends State<RewardsPage> {
 
   void collectReward() {
     // Assuming the reward collection sets progress back to 0 or subtracts threshold
-    double newRewardProgress = rewardProgress - threshold;
+    // Remove the unused variable
+    rewardProgress -= threshold;
 
     firestore.collection('users').doc(userId).update({
-      'rewardProgress': newRewardProgress > 0 ? newRewardProgress : 0,
+      'rewardProgress': 0, // Set reward progress to exactly 0 after collection
     }).then((_) async {
         DocumentSnapshot userDoc = await firestore.collection('users').doc(userId).get();
         int rewardsCollected =  (userDoc.data() as Map<String, dynamic>)['rewardsCollected']?.toInt() ?? 0;
@@ -154,7 +155,7 @@ class RewardsPageState extends State<RewardsPage> {
         });
     
       setState(() {
-        rewardProgress = newRewardProgress > 0 ? newRewardProgress : 0;
+        rewardProgress = 0; // Also set local state to 0
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Reward collected!')),
