@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 1;
+  int _currentIndex = 2;
 
   final List<Widget> _screens = [
     const ResourcesPage(),
