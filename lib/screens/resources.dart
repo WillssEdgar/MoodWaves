@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import '/classes/resource_class.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -99,8 +100,10 @@ class _RescSearchBarState extends State<RescSearchBar> {
   Widget build(BuildContext context) {
     return TextField(
       onChanged: (newText) {
+
+        String validText = _ValidatorFunct(newText); // Validates the input
         setState(() {
-          widget.listener.onSearchbarChanged(newText);
+          widget.listener.onSearchbarChanged(validText);
         });
       },
       decoration: const InputDecoration(
@@ -178,3 +181,19 @@ Future<void> _launchURL(String url) async {
 abstract class SearchBarChangeListener {
   void onSearchbarChanged(String value);
 }
+
+
+/// Class that checks input for potentially compromising characters, returns string without them
+/// Whitelist, not blacklist
+String _ValidatorFunct(stringToValidate) {
+
+  if (stringToValidate.contains(new RegExp(r'^[a-zA-Z0-9 ]*$'))) { // Returns only valid input
+    return stringToValidate;
+  } else {
+    return "";
+  }
+  
+
+}
+
+
