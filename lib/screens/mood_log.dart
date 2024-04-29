@@ -259,29 +259,27 @@ class MoodLogState extends State<MoodLog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Mood Log"),
+        actions: [
+          if (DateFormat('yyyy-MM-dd').format(today) ==
+              DateFormat('yyyy-MM-dd').format(DateTime.now())) ...[
+            ElevatedButton(
+              child: Text("Edit Moods"),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => MoodEdit(),
+                  ),
+                );
+              },
+            )
+          ]
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Visibility(
-            visible: DateFormat('yyyy-MM-dd').format(today) ==
-                DateFormat('yyyy-MM-dd').format(DateTime.now()),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  child: Text("Edit Moods"),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MoodEdit(),
-                      ),
-                    );
-                  },
-                )
-              ],
-            ),
-          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
