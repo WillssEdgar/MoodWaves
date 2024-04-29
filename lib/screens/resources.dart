@@ -20,28 +20,22 @@ class _ResourcePageState extends State<ResourcesPage>
     implements SearchBarChangeListener {
   _ResourcePageState();
 
-  
-
-  
   List<Resource> resources = [];
 
   @override
-
   initState() {
-      super.initState;
+    super.initState;
     _loadResourcesFromFirestore();
-
   }
 
-  Future<void> _loadResourcesFromFirestore() async{
-  List<Resource> returnedList = await sampleLists;
-  List<Resource> newList = resources + returnedList;
-  setState((){
-
-    resources = newList;
-  });
-;
-}
+  Future<void> _loadResourcesFromFirestore() async {
+    List<Resource> returnedList = await sampleLists;
+    List<Resource> newList = resources + returnedList;
+    setState(() {
+      resources = newList;
+    });
+    ;
+  }
 
   @override
 
@@ -64,13 +58,10 @@ class _ResourcePageState extends State<ResourcesPage>
     final ThemeData themeData = ThemeData(useMaterial3: true);
 
     if (resources.isEmpty) {
-
       CircularProgressIndicator();
     }
 
-    if (resources.isNotEmpty) {
-
-    }
+    if (resources.isNotEmpty) {}
 
     return MaterialApp(
         theme: themeData,
@@ -191,6 +182,7 @@ abstract class SearchBarChangeListener {
   void onSearchbarChanged(String value);
 }
 
+
 /// Class that checks input for potentially compromising characters, returns string without them
 /// Whitelist, not blacklist
 String _ValidatorFunct(stringToValidate) {
@@ -203,4 +195,5 @@ String _ValidatorFunct(stringToValidate) {
   
 
 }
+
 

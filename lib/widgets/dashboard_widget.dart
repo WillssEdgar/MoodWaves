@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mood_waves/widgets/details_card.dart';
 import 'package:mood_waves/classes/mood_info.dart';
 import 'package:mood_waves/classes/mood.dart';
 import 'package:mood_waves/widgets/pie_chart.dart';
@@ -33,6 +32,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         [Mood("No moods entered for this date", Colors.blueGrey.shade100)]);
     _fetchMoodEntry(today);
     _fetchRewardProgress();
+    updateConsecutiveDays();
   }
 
   void _fetchRewardProgress() async {
@@ -108,98 +108,186 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     }
   }
 
+  int streakOfDates(List<DateTime> dates) {
+    final datesSet = dates.toSet();
+
+    int currentStreak = 1;
+
+    for (final date in datesSet) {
+      if (datesSet.contains(date.subtract(const Duration(days: 1)))) {
+        currentStreak++;
+      } else {
+        return currentStreak;
+      }
+    }
+
+    return currentStreak;
+  }
+
+  // Function to fetch dates for a particular person and calculate the streak
+  Future<int> calculateStreakForPerson(String userId) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('moodEntries')
+        .orderBy('id', descending: true)
+        .get();
+
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final dates =
+        querySnapshot.docs.map((doc) => dateFormat.parse(doc['id'])).toList();
+
+    dates.sort((b, a) => a.compareTo(b));
+    final streak = streakOfDates(dates);
+
+    return streak;
+  }
+
+  late String consecutiveDays = '';
+  Future<void> updateConsecutiveDays() async {
+    final streak = await calculateStreakForPerson(userId);
+    setState(
+      () {
+        consecutiveDays = streak.toString();
+      },
+    );
+  }
+
   /// The build method builds the UI of the DashboardWidget.
   /// It displays the DetailsCard widget and the MyPieChart widget.
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
-
     return ListView(
       children: [
-        // Place the DetailsCard widget first
-        SizedBox(
-          height: screenSize.height * 0.5,
-          child: Padding(
-            padding: EdgeInsets.all(15),
-            child: const DetailsCard(),
-          ),
-        ),
-        // Then the MyPieChart widget
-        Card(
-          elevation: 3,
-          margin: EdgeInsets.all(20),
-          color: Colors.teal.shade100,
-          child: Padding(
-            padding: EdgeInsets.all(40),
-            child: Center(
-              child: Column(
-                children: [
-                  if (moodInfo.moodlist.isNotEmpty) ...[
-                    Text(
-                      "Mood Chart",
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                    ),
-                    Row(
+        Column(
+          children: [
+            if (moodInfo.moodlist.isNotEmpty) ...[
+              Card.filled(
+                elevation: 6,
+                margin: EdgeInsets.all(20),
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: SizedBox(
-                            height: 200,
-                            child: MyPieChart(
-                              moodLog: moodInfo,
-                              type: "moodlog",
+                        Text(
+                          "Mood Chart",
+                          style: TextStyle(
+                              fontSize: 25, fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 150,
+                                child: MyPieChart(
+                                  moodLog: moodInfo,
+                                  type: "dashboard",
+                                ),
+                              ),
                             ),
+                            SizedBox(
+                              width: 40,
+                            ),
+                            SizedBox(
+                              width: 90,
+                              child: buildLegend(moodInfo),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 175, // Set width to desired value
+                    height: 170, // Set height to desired value
+                    child: Card.filled(
+                      elevation: 6,
+                      margin: EdgeInsets.all(20),
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: SizedBox(
+                          width: 100,
+                          height: 85,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Log\nStreak",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: 7,
+                              ),
+                              Text(
+                                consecutiveDays,
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )
+                            ],
                           ),
                         ),
-                        SizedBox(
-                          width: 40,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 180, // Set width to desired value
+                    height: 170, // Set height to desired value
+                    child: Card.filled(
+                      elevation: 6,
+                      margin: EdgeInsets.all(20),
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Rewards\nProgress",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                  width: 100,
+                                  child: LinearProgressIndicator(
+                                    value: rewardProgress / threshold,
+                                    backgroundColor: Colors.grey[500],
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                            Colors.teal),
+                                    minHeight: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          width: 75,
-                          child: buildLegend(moodInfo),
-                        ),
-                      ],
+                      ),
                     ),
-                    SizedBox(height: 50),
-                    Text(
-                      "Rewards Progress",
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 20,
-                        ),
-                        LinearProgressIndicator(
-                          value: rewardProgress / threshold,
-                          backgroundColor: Colors.grey[300],
-                          valueColor:
-                              const AlwaysStoppedAnimation<Color>(Colors.teal),
-                          minHeight: 20,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 50),
-                    Column(
-                      children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              _fetchMoodEntry(today);
-                              _fetchRewardProgress();
-                            },
-                            child: const Text('Refresh')),
-                      ],
-                    ),
-                  ] else ...[
-                    const Center(
-                      child: Text("No mood data available"),
-                    ),
-                  ],
+                  ),
                 ],
               ),
-            ),
-          ),
+              SizedBox(height: 50),
+            ] else ...[
+              const Center(
+                child: Text("No mood data available"),
+              ),
+            ],
+          ],
         ),
       ],
     );

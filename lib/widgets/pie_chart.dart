@@ -18,9 +18,9 @@ class MyPieChart extends StatelessWidget {
     double radius = 45;
 
     if (type == "dashboard") {
-      centerSpaceRadius = 10;
+      centerSpaceRadius = 30;
       sectionsSpace = 2;
-      radius = 20;
+      radius = 40;
     }
 
     return PieChart(
